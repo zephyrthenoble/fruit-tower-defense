@@ -3,6 +3,9 @@
    import java.util.Iterator;
     public class Tower extends GameObject implements Clickable
    {
+	/**The image of the Tower**/
+	 ImageIcon image=new ImageIcon(getClass().getResource("Images/Towers/generic.png"));
+
 	/**The cost of this Tower**/
 	 int cost=100;
 	/**The radius of the range of the Tower**/
@@ -19,6 +22,8 @@
       boolean lockedOnToFront=true;
       /**The Enemy that this Tower is shooting at**/
 		Enemy lockedOn=null;
+		/**Determines what buff the Tower has**/
+		int buff=0;
 		/**
 		Creates a new Tower object at the given x and y positions on the given NewScreen
 @param x the x position of the Tower
@@ -41,7 +46,7 @@
 		**/
        public Bullet shoot(double x, double y)
       {
-         return new Bullet(x,y,this.getX()+(width/2),this.getY()+(height/2), 10);
+         return new Bullet(x,y,this.getX()+(width/2),this.getY()+(height/2), 10, buff);
       }
 		/**
 		Updates the tower, shooting bullets if the Tower is locked on to an Enemy
@@ -52,6 +57,7 @@
          reload++;
          if(reload>=20)
          {
+			//ArrayList<Enemy> enemies=new ArrayList<Enemy>();
            // if(lockedOn==null)
             {
                Iterator<Enemy> it=screen.getEnemies().iterator();
@@ -96,7 +102,7 @@
          g.setColor(Color.ORANGE);
          g.drawOval((int)getX()-(int)radius+(int)width/2, (int)getY()-(int)radius+(int)height/2, (int)radius*2, (int)radius*2);
          g.setColor(Color.BLUE);
-         g.fillRect((int)getX()+1,(int)getY()+1,(int)height-2,(int)width-2);
+         /*g.fillRect*/g.drawImage(image.getImage(),/*(*/(int)getX()/*+1*/,(int)getY()/*+1*/,(int)height/*-2*/,(int)width/*-2*/, null);
       }
        public String toString()
       {

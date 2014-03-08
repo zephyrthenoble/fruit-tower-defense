@@ -11,10 +11,15 @@
    import javax.swing.ImageIcon;
     public class StatusBar extends GameObject implements Clickable
    {
+   /**The starting amount of cash**/
       final int STARTING_CASH=500;
+   	/**The amount of cash that you have left**/
       int cash=STARTING_CASH;
-		int time=0;
+   	/**The amount of time until the next wave**/
+      int time=0;
    //ImageIcon image = new ImageIcon(getClass().getResource("Images/Enemies/apple.png"));
+   /**The current wave**/
+      int wave=0;  
    /**A list of TowerButtons**/
       ArrayList<TowerButton> buttons=new ArrayList<TowerButton>();
       /**The index of the selected TowerButton**/
@@ -29,6 +34,8 @@
       {
          super(x,y,width,height);
          buttons.add(new TowerButton(100,525,50,50,0));
+         buttons.add(new TowerButton(200, 525, 50, 50, 1));
+         buttons.add(new TowerButton(300, 525, 50, 50, 2));
       }
    	/**Unselects the current button**/
        public void unselect()
@@ -56,7 +63,11 @@
             this.type=type;
             switch(type)
             {
-               default:color=Color.BLUE;
+               case 1: color=Color.BLUE;
+                  break;
+               case 2:color=Color.GREEN;
+               break;
+               default:color=Color.YELLOW;
             }
          }
       
@@ -68,7 +79,7 @@
          {
             if(selected)
             {
-               g.setColor(Color.green);
+               g.setColor(Color.red);
                g.fillRect((int)getX(), (int)getY(), (int)getWidth(), (int)getHeight());
             
             }
@@ -86,11 +97,12 @@
          {
             t.draw(g);
          }
-			g.setColor(new Color(173, 252, 255));
-			g.fillRect(0,500, 100, 100);
+         g.setColor(new Color(173, 252, 255));
+         g.fillRect(0,500, 100, 100);
          g.setColor(Color.black);
          g.drawString("Cash: "+cash, 0,510);
-			g.drawString("Time: "+time, 0, 560);
+         g.drawString("Time: "+time, 0, 530);
+         g.drawString("Wave: " +wave, 0, 550);
       }
        public boolean isClickedOn(double x, double y)
       {

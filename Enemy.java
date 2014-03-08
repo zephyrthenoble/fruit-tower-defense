@@ -6,10 +6,17 @@
       ImageIcon image=new ImageIcon(getClass().getResource("Images/Enemies/apple.png"));
    	/**The image shown when the enemy is damaged**/
       ImageIcon damage=new ImageIcon(getClass().getResource("Images/Enemies/damage.png"));
-   
-   
+   	/**The image shown when the enemy is damaged**/
+      ImageIcon slow=new ImageIcon(getClass().getResource("Images/Enemies/slow.png"));
+   /**The image shown when the enemy is damaged**/
+      ImageIcon poison=new ImageIcon(getClass().getResource("Images/Enemies/poison.png"));
       /**The amount of cash awarded from defeating this enemy**/
       int award= 10;
+   	/**Used to determine how long poison lasts**/
+      int poisonCounter=10;
+      	/**Used to determine how long slow lasts**/
+      int slowCounter=100;
+   
    /**The amount of health this Enemy has**/
       double health;
    	/**The max amount of health this enemy can have**/
@@ -20,6 +27,8 @@
       double dy;
    	/**The movement speed of this Enemy**/
       double speed=2;
+      /**The unslowed movement speed of this Enemy**/
+      double maxSpeed=2;
    	/**The next node to head to**/
       Node next;
    	/**This distance from the previous node to the current target node**/
@@ -61,6 +70,8 @@
       {
          super(node.getX(),node.getY());
          this.health=health;
+         this.speed=speed;
+         maxSpeed=speed;
          maxHealth=health;
          trail(node);
          dist=distanceFormula(getX()+getWidth(), getY()+getHeight(),next.getX()+next.getWidth(), next.getY()+next.getHeight());
@@ -91,6 +102,36 @@
                distTraveled=0;
             }
          }  
+         if(poisoned&&poisonCounter>0)
+         {
+            damage(maxHealth/100);
+            poisonCounter--;
+         }
+         if(poisonCounter<=0)
+         {
+            poisoned=false;
+            poisonCounter=10;
+         }
+         if(slowed&&speed!=maxSpeed)
+         {
+            slowCounter--;
+         }
+         else if(slowed&&slowCounter==100)
+         {
+            changeSpeed(1.0/3.0);
+            speed/=3.0;
+            slowCounter--;
+         }
+         
+      	
+         if(slowCounter<=0)
+         {
+            changeSpeed(3.0);
+            speed*=3.0;
+            slowCounter=100;
+            slowed=false;
+         
+         }
          if(next==null)
          {
             setRemovable(true);
@@ -103,12 +144,35 @@
          next=current.next();
          if(next==null)
             return;
+         updateMove(speed);
+      }
+       public void updateMove( double spd)
+      {
+         if(next==null)
+            return;
          double xLength=(next.getX()-getX());
          double yLength=(next.getY()-getY());
          double angle=Math.atan(yLength/xLength);
-         dx=Math.cos(angle)*speed;
-         dy=Math.sin(angle)*speed;
+         double xang=Math.cos(angle);
+         double yang=Math.sin(angle);
+       
+         dx=xang*speed;
+         dy=yang*speed;
+         if((xLength<0&&dx>0)|| (xLength>0&&dx<0))
+            dx*=-1;
+        
       	
+         if((yLength<0&&dy>0)||(yLength>0&&dy<0))
+            dy*=-1;
+      	
+      }
+      /**Changes the speed of the Enemy
+   	
+   	@param spd the new speed of the Ebemy**/
+       public void changeSpeed(double spd)
+      {
+         dx=dx*spd;
+         dy=dy*spd;
       }
       	/**Draws the Enemy
    	@param g the Graphics object that does the drawing
@@ -125,6 +189,14 @@
             g.drawImage(damage.getImage(), (int)getX(), (int)getY(),(int)getWidth(), (int)getHeight(), null);
             damaged=false;
          }
+         if(poisoned)
+         {
+            g.drawImage(poison.getImage(), (int)getX(), (int)getY(),(int)getWidth(), (int)getHeight(), null);
+          
+         }
+         if(slowed)
+            g.drawImage(slow.getImage(), (int)getX(), (int)getY(),(int)getWidth(), (int)getHeight(), null);
+          
       }
       /**Subtracts the damage dealt by a Bullet object from the current health, and sets itself to be removed if its health is less than or equal to zero
    	@param damage the amount of damage being dealt to this Enemy

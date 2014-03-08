@@ -3,38 +3,39 @@
    import java.util.*;  
     public class Bullet extends GameObject
    {
-	/**The change in x**/
+   /**The change in x**/
       double dx;
-		/**The change in y**/
+   	/**The change in y**/
       double dy;
-		/**The starting x position**/
+   	/**The starting x position**/
       double startX;
-		/**The starting y position**/
+   	/**The starting y position**/
       double startY;
-		/**The speed of the Bullet**/
+   	/**The speed of the Bullet**/
       double speed=10;
-		/**The distance traveled**/
+   	/**The distance traveled**/
       double distance=0;
-		/**The amound of damage done by the bullet**/
+   	/**The amound of damage done by the bullet**/
       double damage=0;
-		/**The color of the bullet**/
+   	/**The color of the bullet**/
       Color color=Color.GREEN;
-		/**Determines what buff the Bullet has**/
-		int buff=0;
-		
+   	/**Determines what buff the Bullet has**/
+      int buff=0;
+   	
    /**Constructs a new Bullet
-	@param x The x position that the Bullet is moving toward
-	@param y The y position that the Bullet is moving toward
-	@param otherX The starting x position
-	@param otherY The starting y position
-	@param dmg The damage that the bullet will do
-	**/
-       public Bullet(double x, double y, double otherX, double otherY, double dmg)
+   @param x The x position that the Bullet is moving toward
+   @param y The y position that the Bullet is moving toward
+   @param otherX The starting x position
+   @param otherY The starting y position
+   @param dmg The damage that the bullet will do
+   **/
+       public Bullet(double x, double y, double otherX, double otherY, double dmg, int buff)
       {
          super(otherX,otherY, 5,5);
          startX=otherX;
          startY=otherY;
          damage=dmg;
+         this.buff=buff;
          //double xLength=(otherX-getX());
          //double yLength=(otherY-getY());
          double xLength=(x-getX());
@@ -72,9 +73,9 @@
          }      	//distance to target
          distance=distanceFormula(x-25, y-25, otherX-25, otherY-25);
       }
-		/**Changes the position of the Bullet, and checks if it has intersected an Enemy object
-		@param enemies The ArrayList of Enemy objects from NewScreen that are being examined
-		**/
+   	/**Changes the position of the Bullet, and checks if it has intersected an Enemy object
+   	@param enemies The ArrayList of Enemy objects from NewScreen that are being examined
+   	**/
        public void update(ArrayList<Enemy> enemies)
       {
       
@@ -88,18 +89,18 @@
             setRemovable(true);
          }
       }
-		/**Draws the Bullet
-		@param g the Graphics object that does the drawing
-		**/
+   	/**Draws the Bullet
+   	@param g the Graphics object that does the drawing
+   	**/
        public void draw(Graphics g)
       {
          g.setColor(color);
          g.fillRect((int)getX(),(int)getY(),5,5);
       }
-		/**
-		Deals damage to an enemy if this Bullet intersects it, and also sets it to be removed
-		@param enemies The ArrayList of Enemy objects from NewScreen that are being examined
-		**/
+   	/**
+   	Deals damage to an enemy if this Bullet intersects it, and also sets it to be removed
+   	@param enemies The ArrayList of Enemy objects from NewScreen that are being examined
+   	**/
        public void damage(ArrayList<Enemy> enemies)
       {
          Iterator<Enemy> it=enemies.iterator();
@@ -111,8 +112,19 @@
             if(this.intersects(temp))
             {
                temp.damage(this.damage);
+               if(buff==1)
+               {
+                  temp.slowed=true;
+                  temp.slowCounter=100; 
+               }
+               else if(buff==2)
+               {
+                  temp.poisoned=true;
+                  temp.poisonCounter=10;
+               }  
                color=Color.PINK;
                this.setRemovable(true);
+               break;
             }
          }
       }

@@ -44,7 +44,7 @@
      /**The health of the Enemy objects being created**/   
       int enHealth;
       /**Counts the amount of enemy checks that have been done**/
-      int waveTimer=1000;
+      int waveTimer=500;
    	/**The max size of the waveTimer**/
       int waveMax=1000;
        /**The file of the Enemy objects being created**/  	
@@ -59,6 +59,8 @@
       GameObject[][] grid= new GameObject[12][12];
       /**The y position on the component of the StatusBar status**/
       public static final int TOPMENU=500;
+      /**Holds the image of the cursor**/
+      ImageIcon image=new ImageIcon(getClass().getResource("Images/cursor.png"));
    	/**Determines which GameObject is being placed**/
       int selected=0;
    	/**Determines if an object is being placed**/
@@ -81,7 +83,8 @@
          Mouse m=new Mouse();
          addMouseListener(m);
          addMouseMotionListener(m);
-      
+         Toolkit test=Toolkit.getDefaultToolkit();
+         this.setCursor(test.createCustomCursor(image.getImage(), new Point(14,14), "black"));
          readInNodes();
          buildPath();
          enemies.add(new Enemy(2,100, first, "Images/Enemies/broccoli.png"));
@@ -188,7 +191,7 @@
             temp=temp.next();
          }
       }
-/**Reads in data for the enemies**/
+   /**Reads in data for the enemies**/
        public void addToGrid(GameObject g)
       {
          int corX=convert(g.getX());
@@ -264,7 +267,11 @@
          int corY=((int)y/50);
          switch(selected)
          {
-         
+            case 1:
+               addToGrid(new SlowTower(corX*50,corY*50, this));
+               break;
+            case 2:  addToGrid(new PoisonTower(corX*50,corY*50, this));
+               break;
             default:
                addToGrid(new Tower(corX*50,corY*50, this));
                break;
@@ -328,40 +335,93 @@
          if(waveTimer<=0)
          {
             wave++;
-         try{
-            int fileWave=infile.nextInt();
-            if(wave!=fileWave)
-            {
-               System.out.println("Error reading in enemies");
-               System.exit(0);
-            }
             
-            countdown=infile.nextInt();
-            numEnemies=infile.nextInt();
-            enSpeed=infile.nextInt();
-            enHealth=infile.nextInt();
-            }
-            catch(Exception e){}
-            
-         	int mod=wave%10;
+            int mod=wave%10;
             String f="Images/Enemies/";
             switch(mod)
             {
-               case 1: enFile=f+"apple.png";
+               case 1:
+                  enFile=f+"apple.png";
+                  countdown=50;
+                  numEnemies=10*(1+(wave/25));
+                  enSpeed=2;
+                  enHealth=200*(1+(wave/10));
+               
                   break;
                case 2: enFile=f+"pineapple.png";
+                  countdown=50;
+                  numEnemies=10*(1+(wave/25));
+                  enSpeed=2;
+                  enHealth=200*(1+(wave/10));
+               
                   break;
                case 3: enFile=f+"pepper.png";
+                  countdown=50;
+                  numEnemies=10*(1+(wave/25));
+                  enSpeed=2;
+                  enHealth=200*(1+(wave/10));
+               
                   break;
                case 4: enFile=f+"lemon.png";
+                  countdown=50;
+                  numEnemies=10*(1+(wave/25));
+                  enSpeed=2;
+                  enHealth=200*(1+(wave/10));
+               
                   break;
                case 5: enFile=f+"broccoli.png";
+                  countdown=50;
+                  numEnemies=10*(1+(wave/25));
+                  enSpeed=2;
+                  enHealth=200*(1+(wave/10));
+               
                   break;
-               case 6: enFile=f+"pumpkin.png";
+               case 6: enFile=f+"watermelon.png";
+                  countdown=50;
+                  numEnemies=10*(1+(wave/25));
+                  enSpeed=2;
+                  enHealth=200*(1+(wave/10));
+               
+                  break;
+               case 7:enFile=f+"orange.png";
+                  countdown=50;
+                  numEnemies=10*(1+(wave/25));
+                  enSpeed=2;
+                  enHealth=200*(1+(wave/10));
+               
+                  break;
+            
+               case 8:enFile=f+"wrap.png";
+                  countdown=50;
+                  numEnemies=10*(1+(wave/25));
+                  enSpeed=2;
+                  enHealth=200*(1+(wave/10));
+               
+                  break;
+            
+               case 9:enFile=f+"strawberry.png";
+                  countdown=50;
+                  numEnemies=10*(1+(wave/25));
+                  enSpeed=2;
+                  enHealth=200*(1+(wave/10));
+               
+                  break;
+            
+               case 0:enFile=f+"pumpkin.png";
+                  countdown=50;
+                  numEnemies=10*(1+(wave/25));
+                  enSpeed=2;
+                  enHealth=200*(1+(wave/10));
+               
                   break;
             
             
                default: enFile= f+"apple.png";
+                  countdown=50;
+                  numEnemies=10*(1+(wave/25));
+                  enSpeed=2;
+                  enHealth=200*(1+(wave/10));
+            
             }
             waveTimer=waveMax;
          }
@@ -415,9 +475,11 @@
    	/**Updates and draws the StatusBar object status**/
        public void updateStatusPanel()
       {
+         status.time=waveTimer;
+         status.wave=wave;
          status.draw(myBuffer);
          status.update();
-         status.time=waveTimer;
+         
       }
    	/**Used to get various mouse input**/
        private class Mouse extends MouseAdapter
