@@ -11,11 +11,11 @@
    /**The image shown when the enemy is damaged**/
       ImageIcon poison=new ImageIcon(getClass().getResource("Images/Enemies/poison.png"));
       /**The amount of cash awarded from defeating this enemy**/
-      int award= 10;
+      int award;
    	/**Used to determine how long poison lasts**/
       int poisonCounter=10;
       	/**Used to determine how long slow lasts**/
-      int slowCounter=100;
+      int slowCounter=50;
    
    /**The amount of health this Enemy has**/
       double health;
@@ -73,6 +73,7 @@
          this.speed=speed;
          maxSpeed=speed;
          maxHealth=health;
+			award=(int)(maxHealth/10);
          trail(node);
          dist=distanceFormula(getX()+getWidth(), getY()+getHeight(),next.getX()+next.getWidth(), next.getY()+next.getHeight());
          image=new ImageIcon(getClass().getResource(file));
@@ -116,19 +117,19 @@
          {
             slowCounter--;
          }
-         else if(slowed&&slowCounter==100)
+         else if(slowed&&slowCounter==50)
          {
-            changeSpeed(1.0/3.0);
-            speed/=3.0;
+            changeSpeed(1.0/2.0);
+            speed/=2.0;
             slowCounter--;
          }
          
       	
          if(slowCounter<=0)
          {
-            changeSpeed(3.0);
-            speed*=3.0;
-            slowCounter=100;
+            changeSpeed(2.0);
+            speed*=2.0;
+            slowCounter=50;
             slowed=false;
          
          }
@@ -212,6 +213,11 @@
          color=Color.RED.darker();
          damaged=true;
       }
+		public double distanceToNode()
+		{
+		 return distanceFormula(this.getX()-(width/2), this.getY()-(height/2), next.getX()-(next.width/2), next.getY()-(next.height/2));
+
+		}
       /**Displays the current health over the max health of this enemy**/
        public void click()
       {

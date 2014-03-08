@@ -23,25 +23,34 @@
    /**A list of TowerButtons**/
       ArrayList<TowerButton> buttons=new ArrayList<TowerButton>();
       /**The index of the selected TowerButton**/
-      int selectedIndex=0;
+      int selectedIndex=-1;
+    /**The Tower whose data is being displayed**/  
+      Tower tower=null;
+   	/**Displays Tower info and upgrade info**/
+      UpgradeStuff stuff=new UpgradeStuff(this);
+      /**Says if a Tower is being placed**/
+      boolean placing=false;
+      /**The NewScreen that this StatusBar is in**/
+      NewScreen screen;
       /**Creates a new StatusBar
    @param x the x position
    @param y the y position
    @param width the width of the StatusBar
    @param height the height of the StatusBar
    **/
-       public StatusBar(int x, int y, int width, int height)
+       public StatusBar(int x, int y, int width, int height, NewScreen screen)
       {
          super(x,y,width,height);
-         buttons.add(new TowerButton(100,525,50,50,0));
-         buttons.add(new TowerButton(200, 525, 50, 50, 1));
-         buttons.add(new TowerButton(300, 525, 50, 50, 2));
+         buttons.add(new TowerButton(100,510,50,50,0));
+         buttons.add(new TowerButton(200, 510, 50, 50, 1));
+         buttons.add(new TowerButton(300, 510, 50, 50, 2));
+         this.screen=screen;
       }
    	/**Unselects the current button**/
        public void unselect()
       {
          buttons.get(selectedIndex).selected=false;
-      
+         selectedIndex=-1;
       }
    	/**This creates a TowerButton that knows what type of Tower it can make when clicked**/
        private class TowerButton/*<? extends Tower>*/ extends GameObject
@@ -66,7 +75,7 @@
                case 1: color=Color.BLUE;
                   break;
                case 2:color=Color.GREEN;
-               break;
+                  break;
                default:color=Color.YELLOW;
             }
          }
@@ -88,9 +97,11 @@
          
          }
       }
+      
      // public void up
        public void draw(Graphics g)
       {
+         stuff.drawRadius(g);
          g.setColor(Color.WHITE);
          g.fillRect((int)getX(), (int)getY(), (int)getWidth(), (int)getHeight());
          for(TowerButton t: buttons)
@@ -100,9 +111,18 @@
          g.setColor(new Color(173, 252, 255));
          g.fillRect(0,500, 100, 100);
          g.setColor(Color.black);
+         g.drawString("Sniper", 100,570);
+         g.drawString("Slow", 200,570);
+         g.drawString("Poison", 300,570);
+         g.drawString("Cost: 100", 100, 590);
+         g.drawString("Cost: 150", 200, 590);
+         g.drawString("Cost: 200", 300, 590);
          g.drawString("Cash: "+cash, 0,510);
          g.drawString("Time: "+time, 0, 530);
          g.drawString("Wave: " +wave, 0, 550);
+         stuff.draw(g);
+         
+      	
       }
        public boolean isClickedOn(double x, double y)
       {
@@ -110,12 +130,101 @@
             if(t.isClickedOn(x,y))
             {
                selectedIndex=buttons.indexOf(t);
-               return true;  
-            }    
+               click();          
+               placing=true;
+               return true;
+            }
+         if(stuff.button.isClickedOn(x,y))
+         {
+            stuff.click();
+            return true;
+         }
          return false;
       }
        public void click()
       {
          buttons.get(selectedIndex).selected=true;
       }
+       public void unclick()
+      {
+         placing=false;
+         //selectedIndex=-1;
+      }
+       public void towerData(Tower tr)
+      {
+         tower=tr;
+         stuff.getData(tr);
+         stuff.ok=true;
+      }
+       private class UpgradeStuff extends GameObject implements Clickable
+      {
+         ImageIcon valid=new ImageIcon(getClass().getResource("Images/upgradeallowed.png"));
+         ImageIcon invalid=new ImageIcon(getClass().getResource("Images/upgradeunavailable.png"));
+         UpgradeButton button=new UpgradeButton();
+         StatusBar s;
+         int damage;
+         double radius;
+         int cooldown; 
+         int upgrade;
+         int upgradeCost; 
+         Tower selectedTower=tower;
+         boolean ok=false;
+         
+          public UpgradeStuff(StatusBar s)
+         {
+            super(400,500,200,200);
+            this.s=s;
+         }
+          public void draw(Graphics g)
+         {
+            if(ok)
+            {
+               if(upgradeCost>s.cash)
+                  g.drawImage(invalid.getImage(), 500,500,null);
+               else
+                  g.drawImage(valid.getImage(), 500,500,null);
+               
+               g.drawString("Damage: "+damage,500,540);
+               g.drawString("Radius: "+radius,500,550);
+               g.drawString("Cooldown: "+cooldown,500, 560);
+               g.drawString("Upgrade Cost: "+upgradeCost,500,570);
+            }
+            else
+               g.drawImage(invalid.getImage(), 500,500,null);
+         }
+          public void drawRadius(Graphics g)
+         {
+            if(tower!=null)
+            {
+               getData(tower);
+               tower.drawRadius(g);
+            }
+         }
+          public void getData(Tower t)
+         {
+            this.damage=t.damage;
+            this.radius=t.radius;
+            this.cooldown=t.cooldown;
+            this.upgradeCost=t.upgradeCost;
+            this.upgrade=t.upgradeNum;
+            tower=t;
+         }
+          public void click()
+         {
+            if(upgradeCost<=s.cash && upgrade<5)
+            {
+               s.tower.upgrade();
+               s.cash-=upgradeCost;
+            }
+         }
+         
+      }
+       private class UpgradeButton extends GameObject
+      {
+          public UpgradeButton()
+         {
+            super(500,500,50,30);
+         }
+      }
+   	
    }

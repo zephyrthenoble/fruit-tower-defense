@@ -12,7 +12,7 @@
          //frame.setSize(600+16, 600+36);
          //frame.setUndecorated(true);
          frame.setResizable(false);
-         //frame.setLocation,(150, 100);
+         //frame.setLocation,;;(150, 100);
          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    
          NewScreen p=new NewScreen();
          p.setPreferredSize(new Dimension(600, 600));

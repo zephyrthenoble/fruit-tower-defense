@@ -16,7 +16,16 @@
    	/**The image used to draw the graphics**/ 
       public BufferedImage myImage;
    	/**The background image**/
-      public static ImageIcon background;
+      public static ImageIcon background;	
+      /**The the game over image**/
+      public ImageIcon gameOver=new ImageIcon(getClass().getResource("Images/GameOver.png"));
+    /**The the paused game image**/  
+      public ImageIcon pause=new ImageIcon(getClass().getResource("Images/Paused.png"));
+    /**The the start game image**/  
+      public ImageIcon start=new ImageIcon(getClass().getResource("Images/startscreen.png"));
+   /**Says if the game has started**/  
+      public boolean started=false;
+   
    	/**The size of the NewScreen**/
       public static final int N=600;
    	/**The default buffer color of the background**/
@@ -35,6 +44,8 @@
       int timer=0;
    	/**The current wave of enemies**/
       int wave=0;
+      /**The amount of lives left**/
+      int life=50;
       /**The time inbetween new Enemy objects**/  
       int countdown;//=new int[10];
       /**The number of the Enemy objects being created**/  
@@ -54,7 +65,7 @@
    	/*The Scanner used to load data from the map files*/
       Scanner infile; 
    	/**The StatusBar object placed at the bottom of the NewScreen**/
-      StatusBar status=new StatusBar(0,500,600,150);
+      StatusBar status=new StatusBar(0,500,600,150, this);
    	/**Contains all static GameObjects on the board**/
       GameObject[][] grid= new GameObject[12][12];
       /**The y position on the component of the StatusBar status**/
@@ -88,10 +99,15 @@
          readInNodes();
          buildPath();
          enemies.add(new Enemy(2,100, first, "Images/Enemies/broccoli.png"));
+         addKeyListener(new Key());
+         myBuffer.drawImage(start.getImage(),0,0,null);
+         repaint();
+      
+      	
          t = new Timer(20, new Updater());
       
       
-         t.start();
+         //t.start();
       	
          setFocusable(true);
         
@@ -166,7 +182,7 @@
            
        
          try{
-            infile=new Scanner(new File("Maps/FirstMap"));
+            infile=new Scanner(new File/*getClass().getResource*/("Maps/FirstMap"));
          }
              catch(Exception e){System.out.println("Error reading map file.");System.exit(0);}
          mapName=infile.next();
@@ -241,6 +257,8 @@
    	/**Updates all of the objects that need to be updated and drawn in the NewScreen**/
        public void run()
       {
+         myBuffer.setFont(Font.decode(Font.SERIF));
+         myBuffer.setFont(myBuffer.getFont().deriveFont(Font.PLAIN));
          myBuffer.setColor(BACKGROUND);
          myBuffer.fillRect(0, 0, N, N); 
          myBuffer.setColor(Color.RED);
@@ -248,10 +266,21 @@
          myBuffer.drawString("abs("+ax+", "+ay+")", 0,150);
          updateGrid();
          //updateNodes();    
-         //updateTowers();
+         
          updateEnemies();
+         updateTowers();
          updateBullets();
          updateStatusPanel();//status.draw(myBuffer);
+         myBuffer.setColor(Color.BLUE);
+         myBuffer.setFont(Font.decode(Font.SANS_SERIF));
+         myBuffer.setFont(myBuffer.getFont().deriveFont(Font.BOLD));
+         myBuffer.drawString("Lives: "+life, 500,10);
+         if(life<=0)
+         {
+            pauseGame();
+            myBuffer.drawImage(gameOver.getImage(),0,0,null);
+         
+         }  
          repaint();
       }
    	/**Places a tower of the type determined by the int selected at the coordinate given
@@ -267,14 +296,18 @@
          int corY=((int)y/50);
          switch(selected)
          {
+            case 0:
+               addToGrid(new Tower(corX*50,corY*50, this));
+               break;
+         
             case 1:
                addToGrid(new SlowTower(corX*50,corY*50, this));
                break;
             case 2:  addToGrid(new PoisonTower(corX*50,corY*50, this));
                break;
             default:
-               addToGrid(new Tower(corX*50,corY*50, this));
-               break;
+               return null;
+         
          }
          status.unselect();
          return  (Tower)grid[corX][corY];
@@ -306,8 +339,8 @@
             }
          }
       }
-   /*
-   old
+   
+   
    	//Updates all of the Tower objects in towers      
        public void updateTowers()
       {
@@ -315,12 +348,12 @@
          while(t.hasNext())
          {
             Tower temp=t.next();
-            temp.draw(myBuffer);
-            temp.update();
-            if(temp.isRemovable())
+            if(temp==null)
                t.remove();
+            else if(temp.drawRadius)
+               temp.drawRadius(myBuffer);
          }
-      }*/
+      }
    	/**Updates all the Enemy objects in enemies**/
        public void updateEnemies()
       {
@@ -342,82 +375,82 @@
             {
                case 1:
                   enFile=f+"apple.png";
-                  countdown=50;
+                  countdown=50/(1+(wave/25));
                   numEnemies=10*(1+(wave/25));
                   enSpeed=2;
                   enHealth=200*(1+(wave/10));
                
                   break;
                case 2: enFile=f+"pineapple.png";
-                  countdown=50;
-                  numEnemies=10*(1+(wave/25));
+                  countdown=110/(1+(wave/25));
+                  numEnemies=5*(1+(wave/25));
                   enSpeed=2;
-                  enHealth=200*(1+(wave/10));
+                  enHealth=300*(1+(wave/10));
                
                   break;
                case 3: enFile=f+"pepper.png";
-                  countdown=50;
+                  countdown=50/(1+(wave/25));
                   numEnemies=10*(1+(wave/25));
-                  enSpeed=2;
-                  enHealth=200*(1+(wave/10));
+                  enSpeed=4;
+                  enHealth=50*(1+(wave/10));
                
                   break;
                case 4: enFile=f+"lemon.png";
-                  countdown=50;
-                  numEnemies=10*(1+(wave/25));
-                  enSpeed=2;
-                  enHealth=200*(1+(wave/10));
+                  countdown=200/(1+(wave/25));
+                  numEnemies=4*(1+(wave/25));
+                  enSpeed=1;
+                  enHealth=400*(1+(wave/10));
                
                   break;
                case 5: enFile=f+"broccoli.png";
-                  countdown=50;
-                  numEnemies=10*(1+(wave/25));
+                  countdown=20/(1+(wave/25));
+                  numEnemies=25*(1+(wave/25));
                   enSpeed=2;
-                  enHealth=200*(1+(wave/10));
+                  enHealth=30*(1+(wave/10));
                
                   break;
                case 6: enFile=f+"watermelon.png";
-                  countdown=50;
+                  countdown=50/(1+(wave/25));
                   numEnemies=10*(1+(wave/25));
                   enSpeed=2;
                   enHealth=200*(1+(wave/10));
                
                   break;
                case 7:enFile=f+"orange.png";
-                  countdown=50;
+                  countdown=50/(1+(wave/25));
                   numEnemies=10*(1+(wave/25));
-                  enSpeed=2;
-                  enHealth=200*(1+(wave/10));
+                  enSpeed=3;
+                  enHealth=300*(1+(wave/10));
                
                   break;
             
                case 8:enFile=f+"wrap.png";
-                  countdown=50;
-                  numEnemies=10*(1+(wave/25));
+                  countdown=40/(1+(wave/25));
+                  numEnemies=15*(1+(wave/25));
                   enSpeed=2;
-                  enHealth=200*(1+(wave/10));
+                  enHealth=400*(1+(wave/10));
                
                   break;
             
                case 9:enFile=f+"strawberry.png";
-                  countdown=50;
-                  numEnemies=10*(1+(wave/25));
-                  enSpeed=2;
-                  enHealth=200*(1+(wave/10));
+                  countdown=100/(1+(wave/25));
+                  numEnemies=6*(1+(wave/25));
+                  enSpeed=3;
+                  enHealth=300*(1+(wave/10));
                
                   break;
             
                case 0:enFile=f+"pumpkin.png";
-                  countdown=50;
-                  numEnemies=10*(1+(wave/25));
-                  enSpeed=2;
-                  enHealth=200*(1+(wave/10));
+                  countdown=300/(1+(wave/25));
+                  numEnemies=1*(1+(wave/25));
+                  enSpeed=1;
+                  enHealth=1000*(1+(wave/10));
                
                   break;
             
             
                default: enFile= f+"apple.png";
-                  countdown=50;
+                  countdown=50/(1+(wave/25));
                   numEnemies=10*(1+(wave/25));
                   enSpeed=2;
                   enHealth=200*(1+(wave/10));
@@ -443,6 +476,8 @@
             {
                if(temp.killed)
                   status.cash+= temp.award;
+               else
+                  life--;
                t.remove();
             }
          }
@@ -491,32 +526,58 @@
          {
             double x=e.getX();
             double y=e.getY();
-            
-            if(y>TOPMENU)
-               if(status.isClickedOn(x,y))
-               {  
-                  status.click();
-                  selected=status.selectedIndex;       
-                  placing=true;
-               }
-         	
-            if(placing&&valid(x,y))
+            if(t.isRunning())
             {
-               Tower temp=place(x,y);
-               if(status.cash-temp.cost<0)
+              
+               for(Tower t: towers)
                {
-               //GameObject remove=access(x,y);
-                  grid[(int)x/50][(int)y/50] =null;
+                  if(t.isClickedOn(x,y))
+                  {
+                     t.click();
+                     break;
+                  }
                }
-               else
+               if(y>TOPMENU)
+                  if(status.isClickedOn(x,y))
+                  {  
+                  //status.click();
+                     if(status.placing)
+                     {
+                        selected=status.selectedIndex;       
+                        placing=true;
+                        status.unclick();
+                     }    
+                  }
+            
+               if(placing&&valid(x,y))
                {
-                  status.cash-=temp.cost;            
-                  towers.add(temp);
+                  Tower temp=place(x,y);
+                  if(status.cash-temp.cost<0)
+                  {
+                  //GameObject remove=access(x,y);
+                     grid[(int)x/50][(int)y/50] =null;
+                  }
+                  else
+                  {
+                     status.cash-=temp.cost;            
+                     towers.add(temp);
+                  }
+                  placing=false;
                }
-               placing=false;
-            }
             //System.out.println("("+x+", "+y+")");
-            System.out.println(towers);
+               System.out.println(towers);
+            }
+            else
+            {
+               GameObject restart= new GameObject(80,352,180,46);
+               GameObject quit= new GameObject(353,352,174,46);
+               if(restart.isClickedOn(x,y))
+                  restartGame();
+               else if(quit.isClickedOn(x,y))
+               {
+                  System.exit(0);
+               }
+            }
          }
       	/**
       	Finds where the mouse currently is on the component
@@ -531,5 +592,40 @@
             //System.out.println("("+x+", "+y+")");
          }
       }
-   
+       public void restartGame()
+      {
+         status=new StatusBar(0,500,600,150, this);
+         timer=0;
+         wave=0;
+         life=50;
+         numEnemies=0;
+         waveTimer=500;
+         waveMax=1000;
+         enFile="Images/Enemies/apple.png";
+         grid= new GameObject[12][12];
+         selected=0;
+         towers=new ArrayList<Tower>();
+         enemies=new ArrayList<Enemy>();
+         bullets=new ArrayList<Bullet>();
+         readInNodes(); 
+         buildPath(); 
+         pauseGame();
+      }
+       private class Key extends KeyAdapter
+      {
+      
+          public void keyPressed(KeyEvent e)
+         {
+            if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
+            {
+               status.unselect();
+            }
+            else if(e.getKeyCode()==KeyEvent.VK_P)
+            {
+               pauseGame();
+               myBuffer.drawImage(pause.getImage(),0,0,null);
+               repaint();
+            }
+         }
+      }
    }

@@ -3,6 +3,8 @@
    import java.util.*;  
     public class Bullet extends GameObject
    {
+	/**The angle the bullet is moving towards**/
+	double angle;
    /**The change in x**/
       double dx;
    	/**The change in y**/
@@ -94,7 +96,13 @@
    	**/
        public void draw(Graphics g)
       {
-         g.setColor(color);
+		if(buff==0)
+         g.setColor(Color.YELLOW);
+			else if(buff==1)
+			g.setColor(Color.BLUE);
+			else
+			g.setColor(Color.GREEN);
+			
          g.fillRect((int)getX(),(int)getY(),5,5);
       }
    	/**
@@ -115,7 +123,7 @@
                if(buff==1)
                {
                   temp.slowed=true;
-                  temp.slowCounter=100; 
+                  temp.slowCounter=50; 
                }
                else if(buff==2)
                {
