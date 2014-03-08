@@ -1,6 +1,6 @@
    import java.awt.*;
    import javax.swing.ImageIcon;  
-    public class Enemy extends GameObject
+    public class Enemy extends GameObject implements Clickable
    {
       double health;
       double dx;
@@ -80,4 +80,8 @@
             setRemovable(true);
          color=Color.RED.darker();
       }
+			public void click()
+		{
+		
+		}
    }

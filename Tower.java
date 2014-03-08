@@ -1,7 +1,7 @@
    import java.awt.*;
    import javax.swing.ImageIcon;
    import java.util.Iterator;
-    public class Tower extends GameObject
+    public class Tower extends GameObject implements Clickable
    {
       double radius=150;
       int cooldown=100;
@@ -70,4 +70,8 @@
       {
          return "Tower: ("+getX()+", "+getY()+")";
       }
+			public void click()
+		{
+		
+		}
    }

@@ -58,7 +58,7 @@
    	@param x The x point
    	@param y The y point
    	**/
-       public boolean isClickedOn(int x, int y)
+       public boolean isClickedOn(double x, double y)
       {
          boolean XinRight=getX()<x;
          boolean XinLeft=getX()+getWidth()>x;

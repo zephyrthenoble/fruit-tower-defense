@@ -15,4 +15,8 @@
 	{
 	return"("+getX()+", "+getY()+")";
 	}
+	public void setNext(Node node)
+	{
+	next=node;
+	}
    }

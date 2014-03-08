@@ -61,7 +61,7 @@
          add(screen,BorderLayout.CENTER);
          
       	
-         t = new Timer(20, new Updater());
+         t = new Timer(0, new Updater());
       
       
          t.start();

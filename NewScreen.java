@@ -21,11 +21,14 @@
       int ax=0;
       int ay=0;
       int timer=0;
+      String mapName;
+      StatusBar status=new StatusBar(0,500,600,150);
       GameObject[][] grid= new GameObject[12][12];
       /**Where the menu starts**/
       public static final int TOPMENU=500;
-      public boolean placing=true;
-      Node first =new Node(50, 50, new Node(50, 450, new Node(200,450,new Node(200,50,new Node(400,50,new Node(400, 450,new Node(550, 450,null))))))); 
+      int selected=0;
+      public boolean placing=false;
+      Node first =null;//new Node(50, 50, new Node(50, 450, new Node(200,450,new Node(200,50,new Node(400,50,new Node(400, 450,new Node(550, 450,null))))))); 
       ArrayList<Tower> towers=new ArrayList<Tower>();
       ArrayList<Enemy> enemies=new ArrayList<Enemy>();
       ArrayList<Bullet> bullets=new ArrayList<Bullet>();
@@ -39,12 +42,37 @@
          addMouseListener(m);
          addMouseMotionListener(m);
       
+         readInNodes();
          enemies.add(new Enemy(100, first));
          run();
          setFocusable(true);
          
          //for(int x=0;x<10; x++)
                
+      }
+       public void readInNodes()
+      {
+         Scanner infile=null;      
+       
+         try{
+            infile=new Scanner(new File("FirstMap"));
+         }
+             catch(Exception e){}
+         mapName=infile.next();
+         int numNodes=infile.nextInt();
+         Node temp=null;
+         for(int x=0;x<numNodes;x++)
+         {
+            if(x==0)
+               first=new Node(infile.nextInt(), infile.nextInt(), null);
+            else
+            {
+               if(x==1)
+                  temp=first;
+               temp.setNext(new Node(infile.nextInt(), infile.nextInt(), null));
+               temp=temp.next();
+            }
+         }
       }
        public void addBullet(Bullet b)
       {
@@ -79,38 +107,23 @@
          updateTowers();
          updateEnemies();
          updateBullets();
+         status.draw(myBuffer);
          repaint();
       }
        public Tower place(double x, double y)
       {
          int corX=((int)x/50);
          int corY=((int)y/50);
-         grid[corX][corY]=new Tower(corX*50,corY*50, this);
-      
+         switch(selected)
+         {
+         
+            default:
+               grid[corX][corY]=new Tower(corX*50,corY*50, this);
+               break;
+         }
+         status.unselect();
          return  (Tower)grid[corX][corY];
       }       
-       private class Mouse extends MouseAdapter
-      {
-          public void mousePressed(MouseEvent e)
-         {
-            double x=e.getX();
-            double y=e.getY();
-            if(placing&&valid(x,y))
-            {
-               towers.add(place(x,y));
-            }
-            //System.out.println("("+x+", "+y+")");
-            System.out.println(towers);
-         }
-          public void mouseMoved(MouseEvent e)
-         {
-            xPos=e.getX();
-            yPos=e.getY();
-            ax=e.getXOnScreen();
-            ay=e.getYOnScreen();
-            //System.out.println("("+x+", "+y+")");
-         }
-      }
        public void updateTowers()
       {
          Iterator<Tower> t=towers.iterator();
@@ -160,6 +173,43 @@
          {
             temp.draw(myBuffer);
             temp=temp.next();
+         }
+      }
+       public void updateStatusPanel()
+      {
+         status.draw(myBuffer);
+         status.update();
+      }
+       private class Mouse extends MouseAdapter
+      {
+          public void mousePressed(MouseEvent e)
+         {
+            double x=e.getX();
+            double y=e.getY();
+            
+            if(y>TOPMENU)
+               if(status.isClickedOn(x,y))
+               {  
+                  status.click();
+                  selected=status.selectedIndex;       
+                  placing=true;
+               }
+         	
+            if(placing&&valid(x,y))
+            {
+               towers.add(place(x,y));
+               placing=false;
+            }
+            //System.out.println("("+x+", "+y+")");
+            System.out.println(towers);
+         }
+          public void mouseMoved(MouseEvent e)
+         {
+            xPos=e.getX();
+            yPos=e.getY();
+            ax=e.getXOnScreen();
+            ay=e.getYOnScreen();
+            //System.out.println("("+x+", "+y+")");
          }
       }
    
