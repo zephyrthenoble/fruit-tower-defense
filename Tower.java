@@ -8,6 +8,7 @@
       int damage=10;
       int reload=20;
       NewScreen screen;
+      boolean lockedOnToFront=true;
       Enemy lockedOn=null;
        public Tower(double x, double y, NewScreen s)
       {
@@ -24,7 +25,7 @@
          reload++;
          if(reload>=20)
          {
-            if(lockedOn==null)
+           // if(lockedOn==null)
             {
                Iterator<Enemy> it=screen.getEnemies().iterator();
                while(it.hasNext())
@@ -34,19 +35,23 @@
                   if(enDistance<radius+temp.getWidth())
                   {              
                      lockedOn=temp;
-                     break;  
+                     if(lockedOnToFront)
+                        break;  
                   }    
                }
-            }
-            if(lockedOn!=null)          
-            {
-               double enDistance=distanceFormula(this.getX()-(width/2), this.getY()-(height/2), lockedOn.getX()-(lockedOn.width/2), lockedOn.getY()-(lockedOn.height/2));
-               if(enDistance>radius+lockedOn.getWidth())
-                  lockedOn=null;
-               else
+            //}
+            // else          
+            //{
+               if(lockedOn!=null)
                {
-                  screen.addBullet(shoot(lockedOn.getX()+(int)lockedOn.width/2, lockedOn.getY()+(int)lockedOn.height/2));
-                  reload=0;
+                  double enDistance=distanceFormula(this.getX()-(width/2), this.getY()-(height/2), lockedOn.getX()-(lockedOn.width/2), lockedOn.getY()-(lockedOn.height/2));
+                  if(enDistance>radius+lockedOn.getWidth())
+                     lockedOn=null;
+                  else
+                  {
+                     screen.addBullet(shoot(lockedOn.getX()+(int)lockedOn.width/2, lockedOn.getY()+(int)lockedOn.height/2));
+                     reload=0;
+                  }
                }
             }
          }

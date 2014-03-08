@@ -53,6 +53,25 @@
       {
          removable=b;
       }
+   	/**
+   	Checks to see if a point is inside the GameObject
+   	@param x The x point
+   	@param y The y point
+   	**/
+       public boolean isClickedOn(int x, int y)
+      {
+         boolean XinRight=getX()<x;
+         boolean XinLeft=getX()+getWidth()>x;
+         boolean YinTop=getY()<y;
+         boolean YinBot=getY()+getHeight()>y;
+         if(XinRight&&XinLeft&&YinTop&&YinBot)
+            return true;
+         return false;
+      }
+   	/**
+   	Checks if a GameObject intersects another GameObject
+   	@param check The GameObject that you are checking to see if it intersects with this GameObject
+   	**/
        public boolean intersects(GameObject check)
       {
       //left point
@@ -85,14 +104,27 @@
       {
       
       }
-   	
+   	/**
+   	Finds the distance between two points
+   	@param x The first x point
+   	@param y The first y point
+   	@param otherX The second x point
+   	@param otherY The second y point
+   	@return dist The distance between the points
+   	**/
        public static double distanceFormula(double x, double y, double otherX, double otherY)
       {
-         return Math.sqrt(Math.pow((otherX-x), 2)+Math.pow((otherY-y), 2));
+         double dist= Math.sqrt(Math.pow((otherX-x), 2)+Math.pow((otherY-y), 2));
+      
+         return dist;
       }
-   
+   /**
+   Returns the x and y positions
+   @return str The string that contains the x and y points
+   **/
        public String toString()
       {
-         return "("+xPos+", "+yPos+")";
+         String str="("+xPos+", "+yPos+")";
+         return str;
       }
    }

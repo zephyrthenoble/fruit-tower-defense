@@ -7,6 +7,8 @@
       double dy;
       double speed=2;
       Node next;
+      double dist;
+      double distTraveled=0;
       Color color=Color.BLUE;
    	/**Precondition: Node has at least one more node.**/
        public Enemy(double health, Node node)
@@ -14,7 +16,19 @@
          super(node.getX(),node.getY());
          this.health=health;
          trail(node);
+         dist=distanceFormula(getX()+getWidth(), getY()+getHeight(),next.getX()+next.getWidth(), next.getY()+next.getHeight());
+      
       	
+      }
+       public Enemy(double speed, double health, Node node)
+      {
+         super(node.getX(),node.getY());
+         this.health=health;
+         this.speed=speed;
+         trail(node);
+         dist=distanceFormula(getX()+getWidth(), getY()+getHeight(),next.getX()+next.getWidth(), next.getY()+next.getHeight());
+      
+      
       }
        public double getHealth()
       {
@@ -24,11 +38,21 @@
       {
          setX(getX()+dx);
          setY(getY()+dy);
-         if(this.intersects(next))
+         distTraveled+=speed;
+         if(distTraveled>=dist&&next!=null)
+         {
             trail(next);
+            if(next!=null)
+            {
+               dist=distanceFormula(getX()+getWidth(), getY()+getHeight(),next.getX()+next.getWidth(), next.getY()+next.getHeight());
+               distTraveled=0;
+            }
+         }  
          if(next==null)
+         {
             setRemovable(true);
-      	
+         //	System.out.println("Removed");
+         }
       }
        public void trail(Node current)
       {
@@ -54,6 +78,6 @@
          health-=damage;
          if(health<=0)
             setRemovable(true);
-            color=Color.RED.darker();
+         color=Color.RED.darker();
       }
    }

@@ -22,9 +22,10 @@
       int ay=0;
       int timer=0;
       GameObject[][] grid= new GameObject[12][12];
-      
+      /**Where the menu starts**/
+      public static final int TOPMENU=500;
       public boolean placing=true;
-      Node first =new Node(50, 50, new Node(50, 550, new Node(200,500,new Node(250,0,new Node(600,50,null))))); 
+      Node first =new Node(50, 50, new Node(50, 450, new Node(200,450,new Node(200,50,new Node(400,50,new Node(400, 450,new Node(550, 450,null))))))); 
       ArrayList<Tower> towers=new ArrayList<Tower>();
       ArrayList<Enemy> enemies=new ArrayList<Enemy>();
       ArrayList<Bullet> bullets=new ArrayList<Bullet>();
@@ -59,6 +60,14 @@
       {
          return enemies;
       }
+       public boolean valid(double x, double y)
+      {
+         if(y>TOPMENU)
+            return false;
+         int corX=((int)x/(N/grid.length));
+         int corY=((int)y/(N/grid[0].length));
+         return grid[corX][corY]==null;
+      }
        public void run()
       {
          myBuffer.setColor(BACKGROUND);
@@ -86,7 +95,7 @@
          {
             double x=e.getX();
             double y=e.getY();
-            if(placing)
+            if(placing&&valid(x,y))
             {
                towers.add(place(x,y));
             }
