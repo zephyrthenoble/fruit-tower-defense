@@ -4,6 +4,8 @@
    {
    /**The image of the enemy**/
       ImageIcon image=new ImageIcon(getClass().getResource("Images/Enemies/apple.png"));
+   	/**The image shown when the enemy is damaged**/
+      ImageIcon damage=new ImageIcon(getClass().getResource("Images/Enemies/damage.png"));
    
    
       /**The amount of cash awarded from defeating this enemy**/
@@ -32,7 +34,8 @@
       boolean slowed=false;
    		/**Says if this Enemy is poisoned or not**/
       boolean poisoned=false;
-
+   	/**Used to determine if the enemy has been damaged resently**/
+      boolean damaged=false;
    //old	
        /*public Enemy(double health, Node node)
       {
@@ -54,7 +57,7 @@
    	@param node the starting Node
    	@param file the string filename of the picture that this enemy will draw
    	**/
-           public Enemy(double speed,double health, Node node, String file)
+       public Enemy(double speed,double health, Node node, String file)
       {
          super(node.getX(),node.getY());
          this.health=health;
@@ -65,7 +68,7 @@
       
       	
       }
-  
+   
    	/**Gets the health of the Enemy
    	@return the health of this Enemy
    	**/
@@ -117,6 +120,11 @@
          //if(!color.equals(Color.RED));
          //color=Color.RED;
          g.drawImage(image.getImage(), (int)getX(), (int)getY(),(int)getWidth(), (int)getHeight(), null);
+         if(damaged)
+         {
+            g.drawImage(damage.getImage(), (int)getX(), (int)getY(),(int)getWidth(), (int)getHeight(), null);
+            damaged=false;
+         }
       }
       /**Subtracts the damage dealt by a Bullet object from the current health, and sets itself to be removed if its health is less than or equal to zero
    	@param damage the amount of damage being dealt to this Enemy
@@ -130,6 +138,7 @@
             killed=true;
          }
          color=Color.RED.darker();
+         damaged=true;
       }
       /**Displays the current health over the max health of this enemy**/
        public void click()

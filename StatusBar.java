@@ -13,6 +13,7 @@
    {
       final int STARTING_CASH=500;
       int cash=STARTING_CASH;
+		int time=0;
    //ImageIcon image = new ImageIcon(getClass().getResource("Images/Enemies/apple.png"));
    /**A list of TowerButtons**/
       ArrayList<TowerButton> buttons=new ArrayList<TowerButton>();
@@ -89,6 +90,7 @@
 			g.fillRect(0,500, 100, 100);
          g.setColor(Color.black);
          g.drawString("Cash: "+cash, 0,510);
+			g.drawString("Time: "+time, 0, 560);
       }
        public boolean isClickedOn(double x, double y)
       {

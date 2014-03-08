@@ -19,15 +19,33 @@
       boolean lockedOnToFront=true;
       /**The Enemy that this Tower is shooting at**/
 		Enemy lockedOn=null;
+		/**
+		Creates a new Tower object at the given x and y positions on the given NewScreen
+@param x the x position of the Tower
+@param y the y position of the Tower
+@param s the NewScreen that this Tower is in
+
+		**/
        public Tower(double x, double y, NewScreen s)
       {
          super(x,y);
          screen=s;
       }
+		
+		/**
+		Creates a new Bullet moving towards the given point from the middle of this Tower
+		@param x the x position that the Bullet will move toward
+		@param y the y position that the Bullet will move toward
+		
+		@return a new Bullet object that is moving towards the points
+		**/
        public Bullet shoot(double x, double y)
       {
          return new Bullet(x,y,this.getX()+(width/2),this.getY()+(height/2), 10);
       }
+		/**
+		Updates the tower, shooting bullets if the Tower is locked on to an Enemy
+		**/
        public void update()
       {
       //firingSequence()
@@ -68,6 +86,11 @@
             lockedOn=null;
          
       }
+		/**
+		Draws this Tower
+		@param g the Graphics object that does the drawing on the NewScreen
+		
+		**/
        public void draw(Graphics g)
       {
          g.setColor(Color.ORANGE);
@@ -79,7 +102,13 @@
       {
          return "Tower: ("+getX()+", "+getY()+")";
       }
+		/**Brings up the Tower objects info on the StatusBar**/
 			public void click()
+		{
+		
+		}
+		/**Upgrades the tower, increasing its attack radius, damage, or attack speed**/
+		public void upgrade()
 		{
 		
 		}

@@ -33,10 +33,26 @@
       int ay=0;
    	/**Counts the number of updates of the Timer object t**/
       int timer=0;
-		/**The current wave of enemies**/
-		int wave=0;
+   	/**The current wave of enemies**/
+      int wave=0;
+      /**The time inbetween new Enemy objects**/  
+      int countdown;//=new int[10];
+      /**The number of the Enemy objects being created**/  
+      int numEnemies=0;
+    /**The speed of the Enemy objects being created**/    
+      int enSpeed;//=new int[10];
+     /**The health of the Enemy objects being created**/   
+      int enHealth;
+      /**Counts the amount of enemy checks that have been done**/
+      int waveTimer=1000;
+   	/**The max size of the waveTimer**/
+      int waveMax=1000;
+       /**The file of the Enemy objects being created**/  	
+      String enFile="Images/Enemies/apple.png";
    	/**The name of the current map**/
       String mapName;
+   	/*The Scanner used to load data from the map files*/
+      Scanner infile; 
    	/**The StatusBar object placed at the bottom of the NewScreen**/
       StatusBar status=new StatusBar(0,500,600,150);
    	/**Contains all static GameObjects on the board**/
@@ -144,12 +160,12 @@
       /**Reads in data from the selected map file to create the movement nodes**/
        public void readInNodes()
       {
-         Scanner infile=null;      
+           
        
          try{
             infile=new Scanner(new File("Maps/FirstMap"));
          }
-             catch(Exception e){}
+             catch(Exception e){System.out.println("Error reading map file.");System.exit(0);}
          mapName=infile.next();
          int numNodes=infile.nextInt();
          Node temp=null;
@@ -172,6 +188,7 @@
             temp=temp.next();
          }
       }
+/**Reads in data for the enemies**/
        public void addToGrid(GameObject g)
       {
          int corX=convert(g.getX());
@@ -231,7 +248,7 @@
          //updateTowers();
          updateEnemies();
          updateBullets();
-         status.draw(myBuffer);
+         updateStatusPanel();//status.draw(myBuffer);
          repaint();
       }
    	/**Places a tower of the type determined by the int selected at the coordinate given
@@ -300,11 +317,61 @@
    	/**Updates all the Enemy objects in enemies**/
        public void updateEnemies()
       {
-         timer++;
-         if(timer==100)
+      
+      //format to read in enemies
+      //wave number
+      //time inbetween enemies
+      //num enemies
+      //speed enemies
+      //health enemies
+         waveTimer--;
+         if(waveTimer<=0)
          {
-            enemies.add(new Enemy(3,100, first,"Images/Enemies/apple.png"));
+            wave++;
+         try{
+            int fileWave=infile.nextInt();
+            if(wave!=fileWave)
+            {
+               System.out.println("Error reading in enemies");
+               System.exit(0);
+            }
+            
+            countdown=infile.nextInt();
+            numEnemies=infile.nextInt();
+            enSpeed=infile.nextInt();
+            enHealth=infile.nextInt();
+            }
+            catch(Exception e){}
+            
+         	int mod=wave%10;
+            String f="Images/Enemies/";
+            switch(mod)
+            {
+               case 1: enFile=f+"apple.png";
+                  break;
+               case 2: enFile=f+"pineapple.png";
+                  break;
+               case 3: enFile=f+"pepper.png";
+                  break;
+               case 4: enFile=f+"lemon.png";
+                  break;
+               case 5: enFile=f+"broccoli.png";
+                  break;
+               case 6: enFile=f+"pumpkin.png";
+                  break;
+            
+            
+               default: enFile= f+"apple.png";
+            }
+            waveTimer=waveMax;
+         }
+        
+         timer++;
+         if(timer>=countdown&&countdown>0&&numEnemies>0)
+         {
+            enemies.add(new Enemy(enSpeed,enHealth, first,enFile));
             timer=0;
+            numEnemies--;
          }
          Iterator<Enemy> t=enemies.iterator();
          while(t.hasNext())
@@ -350,6 +417,7 @@
       {
          status.draw(myBuffer);
          status.update();
+         status.time=waveTimer;
       }
    	/**Used to get various mouse input**/
        private class Mouse extends MouseAdapter
