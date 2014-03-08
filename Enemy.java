@@ -44,9 +44,13 @@
        public void draw(Graphics g)
       {
          g.setColor(Color.RED);
-         g.fillRect((int)getX(),(int)getY(),(int)height,(int)width);
-      
+         g.fillRect((int)getX()/**-(int)getWidth()/2**/,(int)getY()/**-(int)getHeight()/2**/,(int)height,(int)width);
       
       }
-   
+       public void damage(double damage)
+      {
+         health-=damage;
+         if(health<=0)
+            setRemovable(true);
+      }
    }
