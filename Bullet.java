@@ -1,10 +1,11 @@
    import java.awt.*;
    import javax.swing.ImageIcon;
    import java.util.*;  
+   import java.awt.geom.AffineTransform;
     public class Bullet extends GameObject
    {
-	/**The angle the bullet is moving towards**/
-	double angle;
+   /**The angle of the Bullet**/
+      double angle;
    /**The change in x**/
       double dx;
    	/**The change in y**/
@@ -14,7 +15,7 @@
    	/**The starting y position**/
       double startY;
    	/**The speed of the Bullet**/
-      double speed=10;
+      double speed=15;
    	/**The distance traveled**/
       double distance=0;
    	/**The amound of damage done by the bullet**/
@@ -23,7 +24,8 @@
       Color color=Color.GREEN;
    	/**Determines what buff the Bullet has**/
       int buff=0;
-   	
+   	/**The image of this Bullet**/
+      ImageIcon image=new ImageIcon(getClass().getResource("Images/Towers/arrow.png"));
    /**Constructs a new Bullet
    @param x The x position that the Bullet is moving toward
    @param y The y position that the Bullet is moving toward
@@ -38,7 +40,23 @@
          startY=otherY;
          damage=dmg;
          this.buff=buff;
-         //double xLength=(otherX-getX());
+         if(this.buff==0)
+         {
+            image=new ImageIcon(getClass().getResource("Images/Towers/genericBullet.png"));
+            this.width=14;
+            this.height=14;
+         }
+         if(this.buff==1)
+         {
+            image=new ImageIcon(getClass().getResource("Images/Towers/iceBullet.png"));
+            speed=5;
+         }
+         else if(this.buff==2)
+         {
+            image=new ImageIcon(getClass().getResource("Images/Towers/poisonBullet.png"));
+            speed=5;
+         }  
+      	//double xLength=(otherX-getX());
          //double yLength=(otherY-getY());
          double xLength=(x-getX());
          double yLength=(y-getY());
@@ -47,7 +65,7 @@
             //xLength*=-1;
          //if(getY()<y)
             //yLength*=-1;
-         double angle=(Math.atan(yLength/xLength));
+         angle=(Math.atan(yLength/xLength));
         // System.out.println(""+Math.toDegrees(angle));      
       
       
@@ -94,19 +112,44 @@
    	/**Draws the Bullet
    	@param g the Graphics object that does the drawing
    	**/
-       public void draw(Graphics g)
+       public void draw(Graphics2D g)
       {
-		if(buff==0)
-         g.setColor(Color.YELLOW);
-			else if(buff==1)
-			g.setColor(Color.BLUE);
-			else
-			g.setColor(Color.GREEN);
-			
-         g.fillRect((int)getX(),(int)getY(),5,5);
+         if(buff==0)
+            g.setColor(Color.YELLOW);
+         else if(buff==1)
+            g.setColor(Color.BLUE);
+         else
+            g.setColor(Color.GREEN);
+         AffineTransform affineTransform = new AffineTransform();
+      //set the translation to the mid of the component
+         
+         affineTransform.setToTranslation(getX(),getY());
+      //affineTransform.setToTranslation(0,0);
+      //rotate with the anchor point as the mid of the image
+         boolean flipped=false;
+         if(dx<0)//||dy<0)
+            //if(!(dx<0&&dy<0))
+         {
+            angle-=Math.PI;
+            flipped=true;
+         }
+         if(buff==0)
+      	angle+=Math.PI/4.0;
+        int center=(int)(this.width/2.0);
+        if(this.width%2.0!=0.0)
+        center++;
+        
+         affineTransform.rotate(angle+(Math.PI/2.0), center, center);
+      //draw the image using the AffineTransform
+        
+         g.drawImage(image.getImage(), affineTransform, null);
+         if(flipped)
+            angle+=Math.PI;
+      
+        // g.fillRect((int)getX(),(int)getY(),5,5);
       }
    	/**
-   	Deals damage to an enemy if this Bullet intersects it, and also sets it to be removed
+   	Deals damage to an enemy if this Bullet intersects it, and also sets it to be removed. This will also transfer the Bullet's buff to the Enemy it hits.
    	@param enemies The ArrayList of Enemy objects from NewScreen that are being examined
    	**/
        public void damage(ArrayList<Enemy> enemies)
@@ -128,7 +171,7 @@
                else if(buff==2)
                {
                   temp.poisoned=true;
-                  temp.poisonCounter=10;
+                  temp.poisonCounter=100;
                }  
                color=Color.PINK;
                this.setRemovable(true);

@@ -25,13 +25,14 @@
       public ImageIcon start=new ImageIcon(getClass().getResource("Images/startscreen.png"));
    /**Says if the game has started**/  
       public boolean started=false;
-   
+      /**If space is true, then you can see all enemy health bars**/
+      public boolean space=false;
    	/**The size of the NewScreen**/
       public static final int N=600;
    	/**The default buffer color of the background**/
       public static final Color BACKGROUND = new Color(204, 204, 204);
-   	/**The Graphics object used to draw the graphics**/    
-      public Graphics myBuffer;
+   	/**The Graphics2D object used to draw the graphics**/    
+      public Graphics2D myBuffer;
    	/**The x posision on the component of the mouse**/    
       int xPos=0;
    	/**The y posision on the component of the mouse**/ 	
@@ -88,14 +89,15 @@
        public NewScreen()
       {
          myImage =  new BufferedImage(N, N, BufferedImage.TYPE_INT_RGB);
-         myBuffer = myImage.getGraphics();
+         myBuffer = myImage.createGraphics();
          myBuffer.setColor(BACKGROUND);
          myBuffer.fillRect(0, 0, N, N); 
          Mouse m=new Mouse();
          addMouseListener(m);
          addMouseMotionListener(m);
          Toolkit test=Toolkit.getDefaultToolkit();
-         this.setCursor(test.createCustomCursor(image.getImage(), new Point(14,14), "black"));
+         this.setCursor(test.createCustomCursor(image.getImage(), new Point(15,15), "black"));
+         //Cursor.systemCustomCursorPropertiesFile();       
          readInNodes();
          buildPath();
          enemies.add(new Enemy(2,100, first, "Images/Enemies/broccoli.png"));
@@ -138,7 +140,7 @@
    
    
          
-         //for(int x=0;x<10; x++)
+       
    		/**Makes the path that the enemies follow.  The player will not be able to place Tower objects on the path or the Nodes**/
        public void buildPath()
       {
@@ -262,8 +264,8 @@
          myBuffer.setColor(BACKGROUND);
          myBuffer.fillRect(0, 0, N, N); 
          myBuffer.setColor(Color.RED);
-         myBuffer.drawString("("+xPos+", "+yPos+")", 0,50);
-         myBuffer.drawString("abs("+ax+", "+ay+")", 0,150);
+         //myBuffer.drawString("("+xPos+", "+yPos+")", 0,10);
+         //myBuffer.drawString("abs("+ax+", "+ay+")", 0,150);
          updateGrid();
          //updateNodes();    
          
@@ -271,10 +273,16 @@
          updateTowers();
          updateBullets();
          updateStatusPanel();//status.draw(myBuffer);
+         myBuffer.setColor(Color.BLACK);
+         myBuffer.fillRect(475,0, 100,25);
          myBuffer.setColor(Color.BLUE);
+         if(life<=25)
+            myBuffer.setColor(Color.GREEN);
+         if(life<=10)
+            myBuffer.setColor(Color.RED);     
          myBuffer.setFont(Font.decode(Font.SANS_SERIF));
          myBuffer.setFont(myBuffer.getFont().deriveFont(Font.BOLD));
-         myBuffer.drawString("Lives: "+life, 500,10);
+         myBuffer.drawString("Lives: "+life, 500,15);
          if(life<=0)
          {
             pauseGame();
@@ -335,13 +343,14 @@
                   temp.update();
                   if(temp.isRemovable())
                      grid[x][y]=null;
+               	
                }
             }
          }
       }
    
    
-   	//Updates all of the Tower objects in towers      
+   	/**Updates all of the Tower objects in towers**/      
        public void updateTowers()
       {
          Iterator<Tower> t=towers.iterator();
@@ -352,111 +361,20 @@
                t.remove();
             else if(temp.drawRadius)
                temp.drawRadius(myBuffer);
+            if(temp.isRemovable())
+               t.remove();
          }
       }
    	/**Updates all the Enemy objects in enemies**/
        public void updateEnemies()
       {
       
-      //format to read in enemies
-      //wave number
-      //time inbetween enemies
-      //num enemies
-      //speed enemies
-      //health enemies
+      
          waveTimer--;
          if(waveTimer<=0)
          {
-            wave++;
-            
-            int mod=wave%10;
-            String f="Images/Enemies/";
-            switch(mod)
-            {
-               case 1:
-                  enFile=f+"apple.png";
-                  countdown=50/(1+(wave/25));
-                  numEnemies=10*(1+(wave/25));
-                  enSpeed=2;
-                  enHealth=200*(1+(wave/10));
-               
-                  break;
-               case 2: enFile=f+"pineapple.png";
-                  countdown=110/(1+(wave/25));
-                  numEnemies=5*(1+(wave/25));
-                  enSpeed=2;
-                  enHealth=300*(1+(wave/10));
-               
-                  break;
-               case 3: enFile=f+"pepper.png";
-                  countdown=50/(1+(wave/25));
-                  numEnemies=10*(1+(wave/25));
-                  enSpeed=4;
-                  enHealth=50*(1+(wave/10));
-               
-                  break;
-               case 4: enFile=f+"lemon.png";
-                  countdown=200/(1+(wave/25));
-                  numEnemies=4*(1+(wave/25));
-                  enSpeed=1;
-                  enHealth=400*(1+(wave/10));
-               
-                  break;
-               case 5: enFile=f+"broccoli.png";
-                  countdown=20/(1+(wave/25));
-                  numEnemies=25*(1+(wave/25));
-                  enSpeed=2;
-                  enHealth=30*(1+(wave/10));
-               
-                  break;
-               case 6: enFile=f+"watermelon.png";
-                  countdown=50/(1+(wave/25));
-                  numEnemies=10*(1+(wave/25));
-                  enSpeed=2;
-                  enHealth=200*(1+(wave/10));
-               
-                  break;
-               case 7:enFile=f+"orange.png";
-                  countdown=50/(1+(wave/25));
-                  numEnemies=10*(1+(wave/25));
-                  enSpeed=3;
-                  enHealth=300*(1+(wave/10));
-               
-                  break;
-            
-               case 8:enFile=f+"wrap.png";
-                  countdown=40/(1+(wave/25));
-                  numEnemies=15*(1+(wave/25));
-                  enSpeed=2;
-                  enHealth=400*(1+(wave/10));
-               
-                  break;
-            
-               case 9:enFile=f+"strawberry.png";
-                  countdown=100/(1+(wave/25));
-                  numEnemies=6*(1+(wave/25));
-                  enSpeed=3;
-                  enHealth=300*(1+(wave/10));
-               
-                  break;
-            
-               case 0:enFile=f+"pumpkin.png";
-                  countdown=300/(1+(wave/25));
-                  numEnemies=1*(1+(wave/25));
-                  enSpeed=1;
-                  enHealth=1000*(1+(wave/10));
-               
-                  break;
-            
-            
-               default: enFile= f+"apple.png";
-                  countdown=50/(1+(wave/25));
-                  numEnemies=10*(1+(wave/25));
-                  enSpeed=2;
-                  enHealth=200*(1+(wave/10));
-            
-            }
-            waveTimer=waveMax;
+            newWave();
+         
          }
         
          timer++;
@@ -472,6 +390,15 @@
             Enemy temp=t.next();
             temp.draw(myBuffer);
             temp.update();
+            if(!space)
+            {
+               if(temp.isClickedOn(xPos,yPos))
+               
+                  temp.drawHealth(myBuffer);
+            }
+            else
+               temp.drawHealth(myBuffer);
+         
             if(temp.isRemovable())
             {
                if(temp.killed)
@@ -481,6 +408,100 @@
                t.remove();
             }
          }
+      }
+      /**Creates a new wave of Enemy objects**/
+       public void newWave()
+      {
+         wave++;
+            
+         int mod=wave%10;
+         String f="Images/Enemies/";
+         switch(mod)
+         {
+            case 1:
+               enFile=f+"apple.png";
+               countdown=50/(1+(wave/25));
+               numEnemies=10*(1+(wave/25));
+               enSpeed=2;
+               enHealth=200*(1+(wave/10));
+               
+               break;
+            case 2: enFile=f+"pineapple.png";
+               countdown=110/(1+(wave/25));
+               numEnemies=5*(1+(wave/25));
+               enSpeed=2;
+               enHealth=300*(1+(wave/10));
+               
+               break;
+            case 3: enFile=f+"pepper.png";
+               countdown=50/(1+(wave/25));
+               numEnemies=10*(1+(wave/25));
+               enSpeed=4;
+               enHealth=50*(1+(wave/10));
+               
+               break;
+            case 4: enFile=f+"lemon.png";
+               countdown=200/(1+(wave/25));
+               numEnemies=4*(1+(wave/25));
+               enSpeed=1;
+               enHealth=400*(1+(wave/10));
+               
+               break;
+            case 5: enFile=f+"broccoli.png";
+               countdown=20/(1+(wave/25));
+               numEnemies=25*(1+(wave/25));
+               enSpeed=2;
+               enHealth=30*(1+(wave/10));
+               
+               break;
+            case 6: enFile=f+"watermelon.png";
+               countdown=50/(1+(wave/25));
+               numEnemies=10*(1+(wave/25));
+               enSpeed=2;
+               enHealth=200*(1+(wave/10));
+               
+               break;
+            case 7:enFile=f+"orange.png";
+               countdown=50/(1+(wave/25));
+               numEnemies=10*(1+(wave/25));
+               enSpeed=3;
+               enHealth=300*(1+(wave/10));
+               
+               break;
+            
+            case 8:enFile=f+"wrap.png";
+               countdown=40/(1+(wave/25));
+               numEnemies=15*(1+(wave/25));
+               enSpeed=2;
+               enHealth=400*(1+(wave/10));
+               
+               break;
+            
+            case 9:enFile=f+"strawberry.png";
+               countdown=100/(1+(wave/25));
+               numEnemies=6*(1+(wave/25));
+               enSpeed=3;
+               enHealth=300*(1+(wave/10));
+               
+               break;
+            
+            case 0:enFile=f+"pumpkin.png";
+               countdown=300/(1+(wave/25));
+               numEnemies=1*(1+(wave/25));
+               enSpeed=1;
+               enHealth=1000*(1+(wave/10));
+               
+               break;
+            
+            
+            default: enFile= f+"apple.png";
+               countdown=50/(1+(wave/25));
+               numEnemies=10*(1+(wave/25));
+               enSpeed=2;
+               enHealth=200*(1+(wave/10));
+            
+         }
+         waveTimer=waveMax;
       }
    	/**Updates and draws all the Bullet objects in bullets**/
        public void updateBullets()
@@ -495,19 +516,8 @@
                t.remove();
          }
       }
-    /*  
-    old
-   	//Updates and draws all of the nodes linked to first
-       public void updateNodes()
-      {
-         Node temp=first;
-         while(temp.next()!=null)
-         {
-            temp.draw(myBuffer);
-            temp=temp.next();
-         }
-      }*/
-   	/**Updates and draws the StatusBar object status**/
+    
+       	/**Updates and draws the StatusBar object status**/
        public void updateStatusPanel()
       {
          status.time=waveTimer;
@@ -565,7 +575,7 @@
                   placing=false;
                }
             //System.out.println("("+x+", "+y+")");
-               System.out.println(towers);
+               //System.out.println(towers);
             }
             else
             {
@@ -589,9 +599,10 @@
             yPos=e.getY();
             ax=e.getXOnScreen();
             ay=e.getYOnScreen();
-            //System.out.println("("+x+", "+y+")");
+                       //System.out.println("("+x+", "+y+")");
          }
       }
+      /**Resets the game for a new game**/
        public void restartGame()
       {
          status=new StatusBar(0,500,600,150, this);
@@ -611,20 +622,36 @@
          buildPath(); 
          pauseGame();
       }
+   	/**Used to deal with KeyEvents**/
        private class Key extends KeyAdapter
       {
-      
+      /**Does things based on user input
+      @param e the KeyEvent that specifies what should be done
+      **/
           public void keyPressed(KeyEvent e)
          {
             if(e.getKeyCode()==KeyEvent.VK_ESCAPE)
             {
                status.unselect();
+               placing=false;
             }
             else if(e.getKeyCode()==KeyEvent.VK_P)
             {
                pauseGame();
                myBuffer.drawImage(pause.getImage(),0,0,null);
                repaint();
+            }
+            else if(e.getKeyCode()==KeyEvent.VK_SPACE)
+            {
+               if(space)
+                  space=false;
+               else
+                  space=true;
+            }
+            else if(e.getKeyCode()==KeyEvent.VK_N)
+            {
+               if(numEnemies<=0)
+                  newWave();
             }
          }
       }

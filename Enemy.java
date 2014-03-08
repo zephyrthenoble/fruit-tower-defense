@@ -1,6 +1,6 @@
    import java.awt.*;
    import javax.swing.ImageIcon;  
-    public class Enemy extends GameObject implements Clickable
+    public class Enemy extends GameObject
    {
    /**The image of the enemy**/
       ImageIcon image=new ImageIcon(getClass().getResource("Images/Enemies/apple.png"));
@@ -13,7 +13,7 @@
       /**The amount of cash awarded from defeating this enemy**/
       int award;
    	/**Used to determine how long poison lasts**/
-      int poisonCounter=10;
+      int poisonCounter=100;
       	/**Used to determine how long slow lasts**/
       int slowCounter=50;
    
@@ -45,18 +45,7 @@
       boolean poisoned=false;
    	/**Used to determine if the enemy has been damaged resently**/
       boolean damaged=false;
-   //old	
-       /*public Enemy(double health, Node node)
-      {
-         super(node.getX(),node.getY());
-         this.health=health;
-         maxHealth=health;
-         trail(node);
-         dist=distanceFormula(getX()+getWidth(), getY()+getHeight(),next.getX()+next.getWidth(), next.getY()+next.getHeight());
-         image=new ImageIcon(getClass().getResource("Images/Enemies/broccoli.png"));
-      
-      	
-      }*/
+   
       
    	   	/**
    	Creates a new Enemy
@@ -73,7 +62,9 @@
          this.speed=speed;
          maxSpeed=speed;
          maxHealth=health;
-			award=(int)(maxHealth/10);
+         award=(int)(maxHealth/100);
+         if(award<=0)
+            award=1;
          trail(node);
          dist=distanceFormula(getX()+getWidth(), getY()+getHeight(),next.getX()+next.getWidth(), next.getY()+next.getHeight());
          image=new ImageIcon(getClass().getResource(file));
@@ -105,13 +96,15 @@
          }  
          if(poisoned&&poisonCounter>0)
          {
-            damage(maxHealth/100);
+            
             poisonCounter--;
+            if(poisonCounter%10==0)
+               damage(maxHealth/50);
          }
          if(poisonCounter<=0)
          {
             poisoned=false;
-            poisonCounter=10;
+            poisonCounter=100;
          }
          if(slowed&&speed!=maxSpeed)
          {
@@ -145,9 +138,10 @@
          next=current.next();
          if(next==null)
             return;
-         updateMove(speed);
+         updateMove();
       }
-       public void updateMove( double spd)
+      /**Changes the direction of the Enemy	**/
+       public void updateMove()
       {
          if(next==null)
             return;
@@ -192,14 +186,23 @@
          }
          if(poisoned)
          {
-            g.drawImage(poison.getImage(), (int)getX(), (int)getY(),(int)getWidth(), (int)getHeight(), null);
+            g.drawImage(poison.getImage(), (int)getX(), (int)getY(),10/*(int)getWidth(), (int)getHeight(),*/,10, null);
           
          }
          if(slowed)
-            g.drawImage(slow.getImage(), (int)getX(), (int)getY(),(int)getWidth(), (int)getHeight(), null);
+            g.drawImage(slow.getImage(), (int)getX()+(int)getWidth()-10, (int)getY(),10,10/*(int)getWidth(), (int)getHeight()*/, null);
           
       }
-      /**Subtracts the damage dealt by a Bullet object from the current health, and sets itself to be removed if its health is less than or equal to zero
+     /**Draws a health bar with the Enemy's current health represented graphically**/
+       public void drawHealth(Graphics g)
+      {
+         g.setColor(Color.BLACK);
+         g.fillRect((int)this.getX(), (int)this.getY()-10,(int)this.getWidth(),8);
+         g.setColor(Color.RED);
+         g.fillRect((int)this.getX()+1, (int)this.getY()-9,(int)((double)(this.getWidth()-1)*((double)health/(double)maxHealth)),6);
+      
+      }
+       /**Subtracts the damage dealt by a Bullet object from the current health, and sets itself to be removed if its health is less than or equal to zero
    	@param damage the amount of damage being dealt to this Enemy
    	**/
        public void damage(double damage)
@@ -213,14 +216,9 @@
          color=Color.RED.darker();
          damaged=true;
       }
-		public double distanceToNode()
-		{
-		 return distanceFormula(this.getX()-(width/2), this.getY()-(height/2), next.getX()-(next.width/2), next.getY()-(next.height/2));
-
-		}
-      /**Displays the current health over the max health of this enemy**/
-       public void click()
+      /**Returns the distance to this Enemy's next Node**/
+       public double distanceToNode()
       {
-      
-      }
+         return distanceFormula(this.getX()-(width/2), this.getY()-(height/2), next.getX()-(next.width/2), next.getY()-(next.height/2));
+      } 
    }

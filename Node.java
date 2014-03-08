@@ -32,6 +32,11 @@
       {
          next=node;
       }
+   	/**States if a Node is the same as another Node, based upon its position
+   	@param node the Node being compared to this Node
+   	
+   	@return true if this Node is the same as node, otherwise returns false
+   	**/
        public boolean equals(Node node)
       {
          if(node.getX()==this.getX()&&node.getY()==this.getY())

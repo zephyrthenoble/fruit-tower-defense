@@ -12,13 +12,14 @@
       {
          super(x,y,s);
          buff=1;
-         cooldown=200;
-         damage=5;
+         cooldown=100;
+         damage=20;
       	cost=150;
+			moneySpent=150;
       	upgradeCost=150;
          image=new ImageIcon(getClass().getResource("Images/Towers/slow.png"));
       }
-   		/**Upgrades the tower, increasing its attack radius, damage, or attack speed**/
+   		/**Upgrades the SlowTower, increasing its attack radius, damage, or attack speed**/
        public void upgrade()
       {
          if(upgradeNum<5);
@@ -26,6 +27,7 @@
             upgradeNum++;
             radius+=20;
             damage*=2;
+				moneySpent+=upgradeCost;
             cooldown-=5;
          }
       }

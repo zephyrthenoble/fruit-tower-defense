@@ -14,9 +14,12 @@
       {
          super(x,y,width,height);
       }
+		/**Draws the Path
+		@param g the Graphics object doing the drawing
+		**/
        public void draw(Graphics g)
       {
-         g.setColor(Color.gray);
+         g.setColor(new Color(226,126,48));
          g.fillRect((int)getX(), (int)getY(), (int)getWidth(),(int)getHeight());
       }
    }

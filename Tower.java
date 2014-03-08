@@ -6,18 +6,16 @@
    {
    /**The image of the Tower**/
       ImageIcon image=new ImageIcon(getClass().getResource("Images/Towers/generic.png"));
-   
    /**The cost of this Tower**/
       int cost=100;
    /**The radius of the range of the Tower**/
       double radius=150;
-   	
    	/**The amount of damage the Bullet objects that this Tower emits**/
-      int damage=10;
+      int damage=50;
    	/**The value tracking the reload time**/
-      int reload=20;
+      int reload=0;
       /**The value reload is set to**/
-      int cooldown=100;
+      int cooldown=50;
    	/**The NewScreen that this Tower is in**/
       NewScreen screen;
    	/**If true, the tower will shoot at the Enemy farthest down the path, else it will shoot at the closest**/
@@ -30,8 +28,11 @@
       int upgradeNum=0;
    	/**The cost of an upgrade**/
       int upgradeCost=100;
-		/**Says if this Tower is drawing its radius**/
-		boolean drawRadius=false;
+   	/**The money spent on this tower**/
+      int moneySpent=100;
+   	/**Says if this Tower is drawing its radius**/
+      boolean drawRadius=false;
+      
    	/**
    	Creates a new Tower object at the given x and y positions on the given NewScreen
    @param x the x position of the Tower
@@ -62,9 +63,10 @@
        public void update()
       {
       //firingSequence()
-         reload++;
-         if(reload>=20)
+         reload--;
+         if(reload<=0)
          {
+            //reload=cooldown;
             ArrayList<Enemy> enemies=new ArrayList<Enemy>();
            // if(lockedOn==null)
             
@@ -81,18 +83,38 @@
             if(enemies.size()==0)
                return;
             int maxNode=0;
-            for(Enemy x: enemies)
-            {
-               Node node=x.next;
-               Node temp=screen.first;
-               int nodeIndex=0;
-               
-               while(!temp.equals(node))
+            if(lockedOnToFront)
+               for(Enemy x: enemies)
                {
-                  temp=temp.next();
-                  nodeIndex++;
-                  if(nodeIndex>maxNode)
+                  Node node=x.next;
+                  Node temp=screen.first;
+                  int nodeIndex=0;
+               
+                  while(!temp.equals(node))
+                  {
+                     temp=temp.next();
+                     nodeIndex++;
+                     if(nodeIndex>maxNode)
+                        maxNode=nodeIndex;
+                  }
+               }
+            else
+            {
+               maxNode=99999;
+               for(Enemy x: enemies)
+               {
+                  Node node=x.next;
+                  Node temp=screen.first;
+                  int nodeIndex=0;
+               
+                  while(!temp.equals(node))
+                  {
+                     temp=temp.next();
+                     nodeIndex++;
+                  }
+                  if(nodeIndex<maxNode)
                      maxNode=nodeIndex;
+                  
                }
             }
             ArrayList<Enemy> max= new ArrayList<Enemy>();
@@ -119,15 +141,13 @@
             {
                double minDist=minEn.distanceToNode();
                double dist=x.distanceToNode();
-               if(dist<minDist)
+               if(lockedOnToFront&&dist<minDist)
                   minEn=x;
+               else if(!lockedOnToFront&&dist>minDist)
+                  minEn=x;        
             }
-            lockedOn=minEn;
-            //if(lockedOnToFront)
-               //break; 
-            //}
-            // else          
-            //{
+            lockedOn=minEn;  
+            
             if(lockedOn!=null)
             {
                double enDistance=distanceFormula(this.getX()-(width/2), this.getY()-(height/2), lockedOn.getX()-(lockedOn.width/2), lockedOn.getY()-(lockedOn.height/2));
@@ -136,7 +156,7 @@
                else
                {
                   screen.addBullet(shoot(lockedOn.getX()+(int)lockedOn.width/2, lockedOn.getY()+(int)lockedOn.height/2));
-                  reload=0;
+                  reload=cooldown;
                }
             }
             
@@ -152,9 +172,10 @@
    	**/
        public void draw(Graphics g)
       {
-          g.setColor(Color.BLUE);
+         g.setColor(Color.BLUE);
          /*g.fillRect*/g.drawImage(image.getImage(),/*(*/(int)getX()/*+1*/,(int)getY()/*+1*/,(int)height/*-2*/,(int)width/*-2*/, null);
       }
+   	/**Returns the position of this Tower in String form**/
        public String toString()
       {
          return "Tower: ("+getX()+", "+getY()+")";
@@ -172,14 +193,24 @@
             upgradeNum++;
             radius+=20;
             damage*=2;
-            cooldown--;
-            upgradeCost+=25;
+            cooldown-=2;
+            moneySpent+=upgradeCost;
+            upgradeCost*=1.5;
          }
       }
-		public void drawRadius(Graphics g)
-		{
-		g.setColor(Color.ORANGE);
+   	/**Draws this Tower
+   	@param g the Graphics object doing the drawing
+   	**/
+       public void drawRadius(Graphics g)
+      {
+         g.setColor(Color.ORANGE);
          g.drawOval((int)getX()-(int)radius+(int)width/2, (int)getY()-(int)radius+(int)height/2, (int)radius*2, (int)radius*2);
         
-		}
+      }
+   	/**Sells this Tower, removing it and giving half of the money back**/
+       public void sell()
+      {
+         screen.status.cash+=moneySpent/2;
+         setRemovable(true);
+      }
    }

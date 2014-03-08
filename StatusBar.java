@@ -17,7 +17,6 @@
       int cash=STARTING_CASH;
    	/**The amount of time until the next wave**/
       int time=0;
-   //ImageIcon image = new ImageIcon(getClass().getResource("Images/Enemies/apple.png"));
    /**The current wave**/
       int wave=0;  
    /**A list of TowerButtons**/
@@ -49,8 +48,16 @@
    	/**Unselects the current button**/
        public void unselect()
       {
-         buttons.get(selectedIndex).selected=false;
+         if(selectedIndex>=0)
+            buttons.get(selectedIndex).selected=false;
+         placing=false;
          selectedIndex=-1;
+      	
+      }
+   	/**Removes info about the current Tower**/
+       public void unclick()
+      {
+         stuff.ok=false;
       }
    	/**This creates a TowerButton that knows what type of Tower it can make when clicked**/
        private class TowerButton/*<? extends Tower>*/ extends GameObject
@@ -139,67 +146,117 @@
             stuff.click();
             return true;
          }
+         else if(stuff.lock.isClickedOn(x,y))
+            stuff.switchTarget();
+         else if(stuff.sellbutton.isClickedOn(x,y))
+         {
+            tower.sell();
+            stuff.ok=false;
+         }
          return false;
       }
+      /**Selects a button**/
        public void click()
       {
+         for(TowerButton x: buttons)
+            x.selected=false;
          buttons.get(selectedIndex).selected=true;
       }
-       public void unclick()
-      {
-         placing=false;
-         //selectedIndex=-1;
-      }
+      /**Gets data about the selected Tower
+   	@param tr the selected Tower
+   	**/
        public void towerData(Tower tr)
       {
          tower=tr;
          stuff.getData(tr);
          stuff.ok=true;
       }
+      /**Contains and displays info about a selected Tower**/
        private class UpgradeStuff extends GameObject implements Clickable
       {
+      /**The image of the valid upgrade button**/
          ImageIcon valid=new ImageIcon(getClass().getResource("Images/upgradeallowed.png"));
+         /**The image of the invalid upgrade button**/
          ImageIcon invalid=new ImageIcon(getClass().getResource("Images/upgradeunavailable.png"));
+         /**The image of the front button**/
+         ImageIcon front=new ImageIcon(getClass().getResource("Images/front.png"));
+         /**The image of the back button**/
+         ImageIcon back=new ImageIcon(getClass().getResource("Images/back.png"));
+         /**The image of the sell button**/
+         ImageIcon sell=new ImageIcon(getClass().getResource("Images/sell.png"));
+        /**Button used to upgrade Towers**/
          UpgradeButton button=new UpgradeButton();
+      	/**Button used to change the way the Tower shoots**/
+         LockButton lock=new LockButton();
+         /**Button used to sell the Tower**/
+         SellButton sellbutton=new SellButton();
+         /**The StatusBar this UpgradeStuff is in**/
          StatusBar s;
+      	/**The damage the Tower is dealing**/
          int damage;
+         /**The radius of the Tower**/
          double radius;
+         /**The cooldown of the Tower**/
          int cooldown; 
+         /**The amount of upgrades of the Tower**/
          int upgrade;
-         int upgradeCost; 
+         /**The cost to upgrade the Tower**/
+         int upgradeCost;
+         /**The selected Tower**/
          Tower selectedTower=tower;
+         /**Says if all of the data should be drawn**/
          boolean ok=false;
+      	/**Used to determine if the Tower is locked on to Enemy objects in front of it or behind it**/
+         boolean lockedOn=true;
          
+      	/**Creates a new UpgradeStuff
+      	@param s the StatusBar that this is in
+      	**/
           public UpgradeStuff(StatusBar s)
          {
             super(400,500,200,200);
             this.s=s;
          }
+         /**Draws the UpgradeStuff and all of the different parts of it
+      	@param g the Graphics object doing the drawing
+      	**/
           public void draw(Graphics g)
          {
             if(ok)
             {
-               if(upgradeCost>s.cash)
-                  g.drawImage(invalid.getImage(), 500,500,null);
+               if(upgradeCost>s.cash||upgrade>=5)
+                  g.drawImage(invalid.getImage(), 450,500,null);
                else
-                  g.drawImage(valid.getImage(), 500,500,null);
-               
+                  g.drawImage(valid.getImage(), 450,500,null);
+               //if(selectedTower!=null)
+               g.drawString("Upgrades: "+upgrade,500,530);
                g.drawString("Damage: "+damage,500,540);
                g.drawString("Radius: "+radius,500,550);
                g.drawString("Cooldown: "+cooldown,500, 560);
                g.drawString("Upgrade Cost: "+upgradeCost,500,570);
+               if(lockedOn)
+                  g.drawImage(front.getImage(), 450, 530,null);
+               else
+                  g.drawImage(back.getImage(), 450, 530, null);
+               g.drawImage(sell.getImage(), 450,560,null);
             }
             else
-               g.drawImage(invalid.getImage(), 500,500,null);
+               g.drawImage(invalid.getImage(), 450,500,null);
          }
+             /**Draws the radius of the selected Tower
+      	@param g the Graphics object doing the drawing
+      	**/
           public void drawRadius(Graphics g)
          {
-            if(tower!=null)
+            if(tower!=null&&!tower.isRemovable())
             {
                getData(tower);
                tower.drawRadius(g);
             }
          }
+         /**Gets data about the selected Tower
+      	@param t the selected Tower
+      	**/
           public void getData(Tower t)
          {
             this.damage=t.damage;
@@ -207,24 +264,61 @@
             this.cooldown=t.cooldown;
             this.upgradeCost=t.upgradeCost;
             this.upgrade=t.upgradeNum;
+            lockedOn=t.lockedOnToFront;
             tower=t;
          }
+         /**Upgrades the selected Tower**/
           public void click()
          {
-            if(upgradeCost<=s.cash && upgrade<5)
+         
+            if(/*selectedTower!=null&&*/upgradeCost<=s.cash && upgrade<5)
             {
                s.tower.upgrade();
                s.cash-=upgradeCost;
             }
          }
+         /**Changes the Tower's targets**/
+          public void switchTarget()
+         {
+            //if(selectedTower!=null)
+            {
+               if(lockedOn)
+                  tower.lockedOnToFront=false;
+               else
+                  tower.lockedOnToFront=true;
+            }
+         }
          
       }
+      /**Used to have the dimensions of the upgrade button**/
        private class UpgradeButton extends GameObject
       {
+      /**Creates a new UpgradeButton at prespecified points**/
           public UpgradeButton()
          {
-            super(500,500,50,30);
+            super(450,500,50,30);
          }
       }
-   	
+       /**Used to have the dimensions of the lock button**/
+   
+       private class LockButton extends GameObject
+      {
+            /**Creates a new LockButton at prespecified points**/
+      
+          public LockButton()
+         {
+            super(450,530,50,30);
+         }
+      }
+       /**Used to have the dimensions of the sell button**/
+   
+       private class SellButton extends GameObject
+      {
+            /**Creates a new SellButton at prespecified points**/
+      
+          public SellButton()
+         {
+            super(450,560,50,30);
+         }
+      }
    }
