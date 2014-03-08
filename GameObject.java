@@ -6,25 +6,25 @@
       double yPos;
       double width;
       double height;
-		boolean removable=false;
+      boolean removable=false;
        public GameObject(double x, double y)
       {
          xPos=x;
          yPos=y;
-			width=50;
-			height=50;
+         width=50;
+         height=50;
       }
        public GameObject(double x, double y, double w, double h)
       {
          xPos=x;
          yPos=y;
-         width=x;
-         height=y;
+         width=w;
+         height=h;
       }
-		public boolean isRemovable()
-		{
-		return removable;
-		}
+       public boolean isRemovable()
+      {
+         return removable;
+      }
        public double getX()
       {
          return xPos;
@@ -49,14 +49,25 @@
       {
          yPos=y;
       }
-		public void setRemovable(boolean b)
-		{
-		removable=b;
-		}
+       public void setRemovable(boolean b)
+      {
+         removable=b;
+      }
        public boolean intersects(GameObject check)
       {
-         if(((getX()>=check.getX()&& getX()<=check.getX()+check.getWidth()) || (getX()+getWidth()>=check.getX()&&getX()+getWidth()<=check.getX()+check.getWidth()))
-         &&(           (getY()>=check.getY()&& getY()<=check.getY()+check.getWidth()) || (getY()+getHeight()>=check.getY()&&getY()+getHeight()<=check.getY()+check.getHeight())))
+      //left point
+         boolean lrX=getX()>=check.getX();
+         boolean llX=getX()<=check.getX()+check.getWidth();
+      //top
+         boolean lrY=getY()>=check.getY();
+         boolean llY= getY()<=check.getY()+check.getHeight();
+      //right point
+         boolean rrX=getX()+getWidth()>=check.getX();
+         boolean rlX=getX()+getWidth()<=check.getX()+check.getWidth();
+      //bot
+         boolean rrY=getY()+getHeight()>=check.getY();
+         boolean rlY=getY()+getHeight()<=check.getY()+check.getHeight();
+         if(((lrX && llX)|| (rrX&&rlX))&&((lrY&&llY) || (rrY&&rlY)))
             return true;
       
          return false;
@@ -74,8 +85,14 @@
       {
       
       }
-		public String toString()
-		{
-		return "("+xPos+", "+yPos+")";
-		}
+   	
+       public static double distanceFormula(double x, double y, double otherX, double otherY)
+      {
+         return Math.sqrt(Math.pow((otherX-x), 2)+Math.pow((otherY-y), 2));
+      }
+   
+       public String toString()
+      {
+         return "("+xPos+", "+yPos+")";
+      }
    }
