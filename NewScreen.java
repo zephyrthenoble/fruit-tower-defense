@@ -33,6 +33,8 @@
       int ay=0;
    	/**Counts the number of updates of the Timer object t**/
       int timer=0;
+		/**The current wave of enemies**/
+		int wave=0;
    	/**The name of the current map**/
       String mapName;
    	/**The StatusBar object placed at the bottom of the NewScreen**/
@@ -66,7 +68,7 @@
       
          readInNodes();
          buildPath();
-         enemies.add(new Enemy(100, first));
+         enemies.add(new Enemy(2,100, first, "Images/Enemies/broccoli.png"));
          t = new Timer(20, new Updater());
       
       
@@ -301,7 +303,7 @@
          timer++;
          if(timer==100)
          {
-            enemies.add(new Enemy(100, first));
+            enemies.add(new Enemy(3,100, first,"Images/Enemies/apple.png"));
             timer=0;
          }
          Iterator<Enemy> t=enemies.iterator();

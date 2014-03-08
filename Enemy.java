@@ -2,7 +2,11 @@
    import javax.swing.ImageIcon;  
     public class Enemy extends GameObject implements Clickable
    {
-   /**The amount of cash awarded from defeating this enemy**/
+   /**The image of the enemy**/
+      ImageIcon image=new ImageIcon(getClass().getResource("Images/Enemies/apple.png"));
+   
+   
+      /**The amount of cash awarded from defeating this enemy**/
       int award= 10;
    /**The amount of health this Enemy has**/
       double health;
@@ -28,40 +32,40 @@
       boolean slowed=false;
    		/**Says if this Enemy is poisoned or not**/
       boolean poisoned=false;
-   	/**
-   	Creates a new Enemy
-   	Precondition: Node has at least one more node.
-   	@param health the max health of the enemy
-   	@param node the starting Node
-   	**/
-   	
-       public Enemy(double health, Node node)
+
+   //old	
+       /*public Enemy(double health, Node node)
       {
          super(node.getX(),node.getY());
          this.health=health;
          maxHealth=health;
          trail(node);
          dist=distanceFormula(getX()+getWidth(), getY()+getHeight(),next.getX()+next.getWidth(), next.getY()+next.getHeight());
+         image=new ImageIcon(getClass().getResource("Images/Enemies/broccoli.png"));
       
       	
-      }
-   	/**
-   	Creates a new Enemy with a given speed
+      }*/
+      
+   	   	/**
+   	Creates a new Enemy
    	Precondition: Node has at least one more node.
+   	@param speed the speed of the Enemy
    	@param health the max health of the enemy
    	@param node the starting Node
-   	@param speed the selected speed of the Enemy
+   	@param file the string filename of the picture that this enemy will draw
    	**/
-       public Enemy(double speed, double health, Node node)
+           public Enemy(double speed,double health, Node node, String file)
       {
          super(node.getX(),node.getY());
          this.health=health;
-         this.speed=speed;
+         maxHealth=health;
          trail(node);
          dist=distanceFormula(getX()+getWidth(), getY()+getHeight(),next.getX()+next.getWidth(), next.getY()+next.getHeight());
+         image=new ImageIcon(getClass().getResource(file));
       
-      
+      	
       }
+  
    	/**Gets the health of the Enemy
    	@return the health of this Enemy
    	**/
@@ -108,10 +112,11 @@
    	**/
        public void draw(Graphics g)
       {
-         g.setColor(color);
-         g.fillRect((int)getX()/**-(int)getWidth()/2**/,(int)getY()/**-(int)getHeight()/2**/,(int)height,(int)width);
-         if(!color.equals(Color.RED));
-         color=Color.RED;
+         //g.setColor(color);
+         //g.fillRect((int)getX()/**-(int)getWidth()/2**/,(int)getY()/**-(int)getHeight()/2**/,(int)height,(int)width);
+         //if(!color.equals(Color.RED));
+         //color=Color.RED;
+         g.drawImage(image.getImage(), (int)getX(), (int)getY(),(int)getWidth(), (int)getHeight(), null);
       }
       /**Subtracts the damage dealt by a Bullet object from the current health, and sets itself to be removed if its health is less than or equal to zero
    	@param damage the amount of damage being dealt to this Enemy
