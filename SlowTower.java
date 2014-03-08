@@ -13,10 +13,10 @@
          super(x,y,s);
          buff=1;
          cooldown=100;
-         damage=20;
+         damage=40;
       	cost=150;
-			moneySpent=150;
-      	upgradeCost=150;
+			moneySpent=75;
+      	upgradeCost=75;
          image=new ImageIcon(getClass().getResource("Images/Towers/slow.png"));
       }
    		/**Upgrades the SlowTower, increasing its attack radius, damage, or attack speed**/

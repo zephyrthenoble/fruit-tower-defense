@@ -27,7 +27,7 @@
       /**The amount of times this Tower has been upgraded**/
       int upgradeNum=0;
    	/**The cost of an upgrade**/
-      int upgradeCost=100;
+      int upgradeCost=50;
    	/**The money spent on this tower**/
       int moneySpent=100;
    	/**Says if this Tower is drawing its radius**/

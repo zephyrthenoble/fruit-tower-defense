@@ -12,7 +12,7 @@
       {
          super(x,y,s);
          buff=2;
-         cooldown=100;
+         cooldown=50;
          damage=20;
          cost=200;
 			moneySpent=200;

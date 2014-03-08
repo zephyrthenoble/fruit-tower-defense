@@ -1,5 +1,5 @@
    import javax.swing.JFrame;
-   import java.awt.*;
+   import java.awt.Dimension;
  /**The ProjectDriver starts the whole game.  It instantiates the NewPanel, which
  actually runs the game.
  @author Mitchell Smith**/
@@ -22,5 +22,4 @@
          frame.setVisible(true);
          p.requestFocus();
       }
-   
    }

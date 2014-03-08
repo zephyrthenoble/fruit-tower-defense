@@ -49,12 +49,12 @@
          if(this.buff==1)
          {
             image=new ImageIcon(getClass().getResource("Images/Towers/iceBullet.png"));
-            speed=5;
+            speed=8;
          }
          else if(this.buff==2)
          {
             image=new ImageIcon(getClass().getResource("Images/Towers/poisonBullet.png"));
-            speed=5;
+            speed=7;
          }  
       	//double xLength=(otherX-getX());
          //double yLength=(otherY-getY());

@@ -62,9 +62,9 @@
          this.speed=speed;
          maxSpeed=speed;
          maxHealth=health;
-         award=(int)(maxHealth/100);
+         award=(int)(maxHealth/40);
          if(award<=0)
-            award=1;
+            award=10;
          trail(node);
          dist=distanceFormula(getX()+getWidth(), getY()+getHeight(),next.getX()+next.getWidth(), next.getY()+next.getHeight());
          image=new ImageIcon(getClass().getResource(file));
@@ -98,31 +98,31 @@
          {
             
             poisonCounter--;
-            if(poisonCounter%10==0)
+            if(poisonCounter%8==0)
                damage(maxHealth/50);
          }
          if(poisonCounter<=0)
          {
             poisoned=false;
-            poisonCounter=100;
+            poisonCounter=300;
          }
          if(slowed&&speed!=maxSpeed)
          {
             slowCounter--;
          }
-         else if(slowed&&slowCounter==50)
+         else if(slowed&&slowCounter==400)
          {
-            changeSpeed(1.0/2.0);
-            speed/=2.0;
+            changeSpeed(1.0/3.0);
+            speed/=3.0;
             slowCounter--;
          }
          
       	
          if(slowCounter<=0)
          {
-            changeSpeed(2.0);
-            speed*=2.0;
-            slowCounter=50;
+            changeSpeed(3.0);
+            speed*=3.0;
+            slowCounter=400;
             slowed=false;
          
          }
