@@ -3,13 +3,22 @@
    import java.util.Iterator;
     public class Tower extends GameObject implements Clickable
    {
+	/**The cost of this Tower**/
+	 int cost=100;
+	/**The radius of the range of the Tower**/
       double radius=150;
+		/**The cooldown time**/
       int cooldown=100;
+		/**The amount of damage the Bullet objects that this Tower emits**/
       int damage=10;
+		/**The value tracking the reload time**/
       int reload=20;
+		/**The NewScreen that this Tower is in**/
       NewScreen screen;
+		/**If true, the tower will shoot at the Enemy farthest down the path, else it will shoot at the closest**/
       boolean lockedOnToFront=true;
-      Enemy lockedOn=null;
+      /**The Enemy that this Tower is shooting at**/
+		Enemy lockedOn=null;
        public Tower(double x, double y, NewScreen s)
       {
          super(x,y);

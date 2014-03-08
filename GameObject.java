@@ -1,12 +1,23 @@
    import java.awt.*;
    import javax.swing.ImageIcon;
+	/**A majority of classes in this game extend GameObject.
+	It contains many helpful methods used to find positions and intersections of objects**/
     public class GameObject
    {
+	/**The x position of the GameObject**/
       double xPos;
+		/**The y position of the GameObject**/
       double yPos;
+		/**The width of the GameObject**/
       double width;
+		/**The height of the GameObject**/
       double height;
+		/**Used to determine if this object needs removing**/
       boolean removable=false;
+		/**Makes a new game object at the posistion specified
+		@param x the x position of the new GameObject
+		@param y the y position of the new GameObject
+		**/
        public GameObject(double x, double y)
       {
          xPos=x;
@@ -14,6 +25,12 @@
          width=50;
          height=50;
       }
+			/**Makes a new game object at the posistion specified, with the selected width and height
+		@param x the x position of the new GameObject
+		@param y the y position of the new GameObject
+		@param w the width of the new GameObject
+		@param h the height of the new GameObject
+		**/
        public GameObject(double x, double y, double w, double h)
       {
          xPos=x;
@@ -21,34 +38,60 @@
          width=w;
          height=h;
       }
+		/**Determines if a GameObject has to be removed
+		@return true if the GameObject should be removed
+		**/
        public boolean isRemovable()
       {
          return removable;
       }
+		/**Gets the x position of the GameObject
+		@return the x position
+		**/
        public double getX()
       {
          return xPos;
       }
+			/**Gets the y position of the GameObject
+		@return the y position
+		**/
        public double getY()
       {
          return yPos;
       }
+			/**Gets the width of the GameObject
+		@return the width
+		**/
        public double getWidth()
       {
          return width;
       }
+			/**Gets the height of the GameObject
+		@return the height
+		**/
        public double getHeight()
       {
          return height;
       }
+		/**Sets the x position
+		@param x the new x position
+		**/
        public void setX(double x)
       {
          xPos=x;
       }
+		
+		/**Sets the y position
+		@param y the new x position
+		**/
        public void setY(double y)
       {
          yPos=y;
       }
+		
+		/**Sets the removability
+		@param b the new boolean value used to determine if the GameObject should be removed
+		**/
        public void setRemovable(boolean b)
       {
          removable=b;
