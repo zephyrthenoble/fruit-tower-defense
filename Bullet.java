@@ -79,9 +79,9 @@
          while(it.hasNext())
          {
             Enemy temp=it.next();
-            if(temp.intersects(this))
-               temp.intersects(this);
-            if(temp.intersects(this))
+           // if(tempintersects(this))
+             //  temp.intersects(this);
+            if(this.intersects(temp))
             {
                temp.damage(this.damage);
                color=Color.PINK;

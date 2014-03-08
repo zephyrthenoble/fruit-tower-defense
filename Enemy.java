@@ -5,8 +5,9 @@
       double health;
       double dx;
       double dy;
-      double speed=3;
+      double speed=2;
       Node next;
+      Color color=Color.BLUE;
    	/**Precondition: Node has at least one more node.**/
        public Enemy(double health, Node node)
       {
@@ -43,14 +44,16 @@
       }
        public void draw(Graphics g)
       {
-         g.setColor(Color.RED);
+         g.setColor(color);
          g.fillRect((int)getX()/**-(int)getWidth()/2**/,(int)getY()/**-(int)getHeight()/2**/,(int)height,(int)width);
-      
+         if(!color.equals(Color.RED));
+         color=Color.RED;
       }
        public void damage(double damage)
       {
          health-=damage;
          if(health<=0)
             setRemovable(true);
+            color=Color.RED.darker();
       }
    }

@@ -24,7 +24,7 @@
       GameObject[][] grid= new GameObject[12][12];
       
       public boolean placing=true;
-      Node first =new Node(200, 100, new Node(200, 500, null)); 
+      Node first =new Node(50, 50, new Node(50, 550, new Node(200,500,new Node(250,0,new Node(600,50,null))))); 
       ArrayList<Tower> towers=new ArrayList<Tower>();
       ArrayList<Enemy> enemies=new ArrayList<Enemy>();
       ArrayList<Bullet> bullets=new ArrayList<Bullet>();
@@ -66,6 +66,7 @@
          myBuffer.setColor(Color.RED);
          myBuffer.drawString("("+xPos+", "+yPos+")", 0,50);
          myBuffer.drawString("abs("+ax+", "+ay+")", 0,150);
+         updateNodes();    
          updateTowers();
          updateEnemies();
          updateBullets();
@@ -141,6 +142,15 @@
             temp.update(enemies);
             if(temp.isRemovable())
                t.remove();
+         }
+      }
+       public void updateNodes()
+      {
+         Node temp=first;
+         while(temp.next()!=null)
+         {
+            temp.draw(myBuffer);
+            temp=temp.next();
          }
       }
    
